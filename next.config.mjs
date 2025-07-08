@@ -25,6 +25,14 @@ const nextConfig = {
       'date-fns'
     ],
     optimizeCss: true,
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
   // CSS optimization
   poweredByHeader: false,
@@ -32,8 +40,43 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Fix for timeout and compilation issues
+  onDemandEntries: {
+    maxInactiveAge: 60 * 1000,
+    pagesBufferLength: 2,
+  },
+  // Performance improvements
+  swcMinify: true,
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+      preventFullImport: true,
+    },
+  },
+  devIndicators: {
+    appIsrStatus: true,
+    buildActivityPosition: 'bottom-right',
+  },
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
+    // Increase timeout for slower builds
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+      ignored: ['**/node_modules', '**/.git', '**/.next'],
+    }
+    
+    // Optimize for faster builds in development
+    if (dev) {
+      config.optimization.splitChunks = false
+      config.cache = {
+        type: 'filesystem',
+        buildDependencies: {
+          config: [__filename],
+        },
+      }
+    }
+    
     if (!dev && !isServer) {
       // Optimize CSS loading
       config.optimization.splitChunks.cacheGroups = {
