@@ -341,7 +341,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](./LICENSE) para 
 
 <div align="center">
   
-  **🚀 Feito com ❤️ pela equipe CRM Pro**
+  **🚀 Feito com ❤️ By Japaxr**
   
   [![GitHub stars](https://img.shields.io/github/stars/usuario/crm-pro-dashboard?style=social)](https://github.com/usuario/crm-pro-dashboard/stargazers)
   [![GitHub forks](https://img.shields.io/github/forks/usuario/crm-pro-dashboard?style=social)](https://github.com/usuario/crm-pro-dashboard/network/members)
