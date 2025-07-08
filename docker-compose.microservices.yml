@@ -1,0 +1,308 @@
+# Docker Compose for Microservices Architecture
+version: '3.8'
+
+services:
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: dashboard-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-dashboard123}
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+    networks:
+      - dashboard_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: dashboard-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dashboard}
+      POSTGRES_USER: ${POSTGRES_USER:-dashboard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dashboard123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - dashboard_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dashboard}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Main Dashboard Application
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dashboard-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-dashboard}:${POSTGRES_PASSWORD:-dashboard123}@postgres:5432/${POSTGRES_DB:-dashboard}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+
+  # API Gateway / Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: dashboard-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - dashboard
+    networks:
+      - dashboard_network
+
+  # Analytics Service (Microservice)
+  analytics-service:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: dashboard-analytics
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-dashboard}:${POSTGRES_PASSWORD:-dashboard123}@postgres:5432/${POSTGRES_DB:-dashboard}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+
+  # Notifications Service (Microservice)
+  notifications-service:
+    build:
+      context: ./services/notifications
+      dockerfile: Dockerfile
+    container_name: dashboard-notifications
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - EMAIL_SMTP_HOST=${EMAIL_SMTP_HOST}
+      - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT}
+      - EMAIL_SMTP_USER=${EMAIL_SMTP_USER}
+      - EMAIL_SMTP_PASS=${EMAIL_SMTP_PASS}
+      - SMS_PROVIDER_API_KEY=${SMS_PROVIDER_API_KEY}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+
+  # Authentication Service (Microservice)
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: dashboard-auth
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-dashboard}:${POSTGRES_PASSWORD:-dashboard123}@postgres:5432/${POSTGRES_DB:-dashboard}
+      - JWT_SECRET=${JWT_SECRET}
+      - MFA_ISSUER=${MFA_ISSUER:-Dashboard}
+      - SSO_SAML_CERT_PATH=/app/certs/saml.crt
+      - SSO_SAML_KEY_PATH=/app/certs/saml.key
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+    volumes:
+      - ./certs:/app/certs:ro
+
+  # AI/ML Service (Microservice)
+  ai-service:
+    build:
+      context: ./services/ai
+      dockerfile: Dockerfile
+    container_name: dashboard-ai
+    restart: unless-stopped
+    ports:
+      - "3004:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUGGINGFACE_API_KEY=${HUGGINGFACE_API_KEY}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+
+  # Integration Service (Microservice)
+  integration-service:
+    build:
+      context: ./services/integrations
+      dockerfile: Dockerfile
+    container_name: dashboard-integrations
+    restart: unless-stopped
+    ports:
+      - "3005:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-dashboard}:${POSTGRES_PASSWORD:-dashboard123}@postgres:5432/${POSTGRES_DB:-dashboard}
+      - GMAIL_CLIENT_ID=${GMAIL_CLIENT_ID}
+      - GMAIL_CLIENT_SECRET=${GMAIL_CLIENT_SECRET}
+      - OUTLOOK_CLIENT_ID=${OUTLOOK_CLIENT_ID}
+      - OUTLOOK_CLIENT_SECRET=${OUTLOOK_CLIENT_SECRET}
+      - SHOPIFY_API_KEY=${SHOPIFY_API_KEY}
+      - SHOPIFY_API_SECRET=${SHOPIFY_API_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
+      - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
+      - HUBSPOT_API_KEY=${HUBSPOT_API_KEY}
+      - RD_STATION_CLIENT_ID=${RD_STATION_CLIENT_ID}
+      - RD_STATION_CLIENT_SECRET=${RD_STATION_CLIENT_SECRET}
+      - META_APP_ID=${META_APP_ID}
+      - META_APP_SECRET=${META_APP_SECRET}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dashboard-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - dashboard_network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dashboard-grafana
+    restart: unless-stopped
+    ports:
+      - "3006:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - dashboard_network
+    depends_on:
+      - prometheus
+
+  # Auto-scaling Controller
+  autoscaler:
+    build:
+      context: ./services/autoscaler
+      dockerfile: Dockerfile
+    container_name: dashboard-autoscaler
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-dashboard123}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - MIN_INSTANCES=2
+      - MAX_INSTANCES=10
+      - TARGET_CPU_UTILIZATION=70
+      - TARGET_MEMORY_UTILIZATION=80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - dashboard_network
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  dashboard_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,28 @@
+/* Correção específica para ocultar botões de expansão quando sidebar colapsada */
+
+/* REGRA PRINCIPAL: Ocultar botão de expandir/recolher submenu quando sidebar colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible [data-radix-collapsible-trigger],
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible button[title*="Expandir"],
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible button[title*="Recolher"] {
+  display: none !important;
+}
+
+/* Ajustar layout dos itens com submenu quando colapsada - remover flex para ocupar largura total */
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible > div {
+  display: block !important;
+}
+
+/* Garantir que o botão principal ocupe toda a largura quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible [data-sidebar-menu-button] {
+  width: 100% !important;
+  flex: none !important;
+  justify-content: center !important;
+  padding: 0.75rem !important;
+}
+
+/* Mostrar apenas quando expandida */
+.group\/sidebar-wrapper[data-state="expanded"] .group\/collapsible [data-radix-collapsible-trigger],
+.group\/sidebar-wrapper[data-state="expanded"] .group\/collapsible button[title*="Expandir"],
+.group\/sidebar-wrapper[data-state="expanded"] .group\/collapsible button[title*="Recolher"] {
+  display: flex !important;
+}

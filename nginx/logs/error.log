@@ -1,0 +1,7 @@
+2025/07/07 10:36:06 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57
+2025/07/07 10:36:13 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57
+2025/07/07 10:36:20 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57
+2025/07/07 10:36:30 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57
+2025/07/07 10:36:37 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57
+2025/07/07 10:36:50 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57
+2025/07/07 10:36:58 [emerg] 1#1: host not found in upstream "dashboard:3000" in /etc/nginx/nginx.conf:57

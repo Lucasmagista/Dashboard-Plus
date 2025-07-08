@@ -1,0 +1,260 @@
+/* Melhorias específicas para a sidebar */
+
+/* Transições mais suaves para a sidebar */
+[data-sidebar="sidebar"] {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Animação suave para o wrapper da sidebar */
+.group\/sidebar-wrapper {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Melhor scroll na sidebar - webkit scrollbars */
+[data-sidebar="sidebar"]::-webkit-scrollbar {
+  width: 4px;
+}
+
+[data-sidebar="sidebar"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-sidebar="sidebar"]::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 2px;
+}
+
+[data-sidebar="sidebar"]::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
+}
+
+/* Correções para quando a sidebar está colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] {
+  width: var(--sidebar-width-icon);
+}
+
+/* Melhor comportamento dos botões quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-button] {
+  justify-content: center;
+  padding: 0.75rem;
+  min-height: 2.75rem;
+  display: flex !important;
+  align-items: center !important;
+  flex: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-button]:hover {
+  transform: none !important;
+  background-color: hsl(var(--sidebar-accent)) !important;
+}
+
+/* Centralizar especificamente os ícones */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-button] svg:first-child {
+  margin: 0 auto !important;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-button] span:not(.sr-only) {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-button] .badge {
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Ocultar texto dos grupos quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-group-label] {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Ocultar botões de expansão de collapsibles quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible .collapsible-trigger,
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible button[title*="Expandir"] {
+  display: none !important;
+}
+
+/* Ajustar o layout dos itens com submenu quando colapsado */
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible > div {
+  display: block !important;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible [data-sidebar-menu-button] {
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+/* Ocultar submenus quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-sub] {
+  display: none;
+}
+
+/* Ajustes para o header quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-header {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-header span:not(.sr-only),
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-header .badge {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Ajustes para o footer quando colapsada */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-footer [data-sidebar-menu-button] {
+  padding: 0.75rem;
+  justify-content: center;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-footer span:not(.sr-only),
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-footer .badge,
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar="sidebar"] .sidebar-footer [data-slot="chevron"] {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Melhorias específicas para itens com submenu quando colapsado */
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible {
+  position: relative;
+}
+
+.group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible > div:first-child {
+  width: 100%;
+}
+
+/* Remover duplicatas: as regras abaixo já estão definidas anteriormente no arquivo. 
+   Se necessário, una propriedades diferentes em um único bloco na primeira ocorrência. */
+
+/* Remover qualquer flex-1 que possa interferir */
+.group\/sidebar-wrapper[data-state="collapsed"] [data-sidebar-menu-button].flex-1 {
+  flex: none !important;
+}
+
+/* Ajustes para mobile */
+@media (max-width: 768px) {
+  .sidebar-inset {
+    padding-left: 0 !important;
+  }
+  
+  [data-sidebar="sidebar"] {
+    position: fixed;
+    z-index: 50;
+  }
+}
+
+/* Animações de hover mais suaves */
+[data-sidebar-menu-button] {
+  transition: all 0.2s ease-in-out;
+}
+
+[data-sidebar-menu-button]:hover {
+  background-color: hsl(var(--sidebar-accent));
+  transform: translateX(1px);
+}
+
+/* Melhor apresentação dos collapsibles */
+.group\/collapsible[data-state="open"] .collapsible-trigger svg {
+  transform: rotate(90deg);
+}
+
+.collapsible-trigger svg {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Ajustes para o conteúdo principal */
+.sidebar-inset {
+  min-height: 100vh;
+  transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Correção para overflow no layout principal */
+.main-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: calc(100vh - 3.5rem); /* Altura menos o header */
+}
+
+/* Melhor responsividade para cards */
+@media (max-width: 1024px) {
+  .grid-cols-7 {
+    grid-template-columns: 1fr;
+  }
+  
+  .lg\:col-span-4,
+  .lg\:col-span-3 {
+    grid-column: span 1;
+  }
+}
+
+/* Ajustes para elementos pequenos demais em telas grandes */
+@media (min-width: 1200px) {
+  .sidebar-menu-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .sidebar-menu-button svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+/* Melhor contraste para badges */
+.badge {
+  font-weight: 500;
+  border: 1px solid hsl(var(--border));
+}
+
+/* Ajustes para o trigger da sidebar */
+[data-sidebar="trigger"] {
+  transition: all 0.2s ease-in-out;
+}
+
+[data-sidebar="trigger"]:hover {
+  background-color: hsl(var(--accent));
+  scale: 1.05;
+}
+
+/* Animações para mostrar/ocultar elementos */
+.group\/sidebar-wrapper[data-state="expanded"] [data-sidebar-menu-button] span:not(.sr-only),
+.group\/sidebar-wrapper[data-state="expanded"] [data-sidebar-menu-button] .badge,
+.group\/sidebar-wrapper[data-state="expanded"] [data-sidebar-group-label],
+.group\/sidebar-wrapper[data-state="expanded"] [data-slot="chevron"] {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.4s ease 0.1s;
+}
+
+/* Correção específica para o layout */
+.group\/sidebar-wrapper[data-state="collapsed"] {
+  --sidebar-width: var(--sidebar-width-icon);
+}
+
+.group\/sidebar-wrapper[data-state="expanded"] {
+  --sidebar-width: 16rem;
+}
+
+/* Suporte para redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

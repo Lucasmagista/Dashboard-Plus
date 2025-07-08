@@ -1,0 +1,58 @@
+
+[2025-07-01T18:36:16.888Z]
+Responsável pelo erro: expedição
+Conta: Shopee - João pedro 
+SKU: 170 gianduia
+Motivo do erro: comprou duas escrivaninhas e recebeu só uma
+Custo: 80,10 (reembolso)
+
+[2025-07-01T18:36:18.252Z]
+Responsável pelo erro: expedição
+Conta: Shopee - João pedro 
+SKU: 170 preto
+Motivo do erro: ficou uma venda sem enviar 
+Custo: 0
+
+[2025-07-01T18:36:19.940Z]
+355710001
+
+[2025-07-03T11:32:41.802Z]
+Teste
+
+[2025-07-03T11:34:31.716Z]
+7898741071648
+
+[2025-07-03T11:34:40.472Z]
+7898741072010
+
+[2025-07-03T15:31:26.357Z]
+*Responsável pelo erro:* Organização/recebimento
+*Motivo do erro:* Não conferiram corretamente o pedido de isopor e acabaram recebendo mercadoria de outra empresa
+
+[2025-07-03T15:31:51.914Z]
+*Responsável pelo erro:* Organização/recebimento
+*Motivo do erro:* Perderam 600 isopores 33 do SKU 610
+
+[2025-07-04T18:08:10.703Z]
+Responsável pelo erro: fornecedor
+Conta:  ML - ehouse 
+Identificação da venda: 2000011643319352
+SKU: 170 - preto
+Motivo do erro: reclamou por ser muito bamba
+Custo: 235,75 (devolução)
+
+[2025-07-04T18:12:35.472Z]
+Responsável pelo erro: montagem
+Conta:  ML - dynamo 
+Identificação da venda: 2000011789371780
+SKU: 410 - freijo
+Motivo do erro: comprou freijo e recebeu preta
+Custo: 0
+
+[2025-07-04T18:25:40.197Z]
+Responsável pelo erro: montagem
+Conta:  ML - phenzzi 
+Identificação da venda: 2000008129794517
+SKU: 129 - freijo
+Motivo do erro: enviaram um tampo em outro tom
+Custo: 129,80 (devolução)

@@ -1,0 +1,37 @@
+━━━━━━━━━━━ RELATÓRIO DE ERROS ━━━━━━━━━━━
+_Período: 03/07/2025_
+
+Conta/Marketplace: Loja Exemplo / Mercado Livre
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# | Responsável | Motivo | Conta | Venda | SKU | Desconto | Reembolso | Devolução | Reembolso Parcial | Envio | Tampo | Outro | Custo Total | Data
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1 | Ana | Produto danificado | Conta1 | 12345 | SKU123 | 10,00 | - | - | - | 5,00 | - | - | 15,00 | 03/07/2025 10:15
+2 | João | Cliente desistiu | Conta1 | 12346 | SKU124 | - | 20,00 | - | - | - | - | - | 20,00 | 03/07/2025 11:00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*Totais do grupo:*
+• Desconto: R$ 10,00
+• Reembolso: R$ 20,00
+• Devolução: R$ 0,00
+• Reembolso Parcial: R$ 0,00
+• Envio: R$ 5,00
+• Tampo: R$ 0,00
+• Outro: R$ 0,00
+
+Conta/Marketplace: Loja Exemplo / Shopee
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# | Responsável | Motivo | Conta | Venda | SKU | Desconto | Reembolso | Devolução | Reembolso Parcial | Envio | Tampo | Outro | Custo Total | Data
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1 | Maria | Endereço incorreto | Conta2 | 22345 | SKU223 | - | - | 15,00 | - | - | - | - | 15,00 | 03/07/2025 09:30
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*Totais do grupo:*
+• Desconto: R$ 0,00
+• Reembolso: R$ 0,00
+• Devolução: R$ 15,00
+• Reembolso Parcial: R$ 0,00
+• Envio: R$ 0,00
+• Tampo: R$ 0,00
+• Outro: R$ 0,00
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Resumo final: 3 erros registrados no período.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
