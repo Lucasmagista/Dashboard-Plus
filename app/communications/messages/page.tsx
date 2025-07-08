@@ -634,11 +634,17 @@ const reactionEmojis = [
   { emoji: "�", label: "Incrível" }
 ]
 
+
+// Supondo que a sidebar tenha largura de 260px (ajuste conforme necessário)
+const SIDEBAR_WIDTH = 260
+
+import "./messages-layout.css"
+
 export default function MessagesPageWrapper() {
   return (
-    <SidebarProvider>
+    <div className="messages-layout text-xs md:text-sm">
       <MessagesPage />
-    </SidebarProvider>
+    </div>
   )
 }
 
@@ -1018,12 +1024,12 @@ function MessagesPage() {
   }, [activeAlerts, dismissAlert])
 
   return (
-    <SidebarInset className={cn("flex flex-col h-screen", isDarkMode && "dark")}>
+    <div className={cn("flex flex-col h-screen text-xs md:text-sm", isDarkMode && "dark")}> 
       <TooltipProvider>
         {/* Enhanced Header with Actions */}
-        <header className="flex h-16 items-center justify-between px-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="mr-2" />
+        <header className="flex h-12 md:h-14 items-center justify-between px-2 md:px-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center gap-1 md:gap-2">
+            <SidebarTrigger className="mr-1 md:mr-2 scale-90" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem><BreadcrumbLink href="/">Dashboard</BreadcrumbLink></BreadcrumbItem>
@@ -1034,111 +1040,106 @@ function MessagesPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             {/* AI Insights */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={() => setShowAIInsights(!showAIInsights)}>
-                  <Bot className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="h-7 px-2 py-1 text-xs" onClick={() => setShowAIInsights(!showAIInsights)}>
+                  <Bot className="h-3 w-3 mr-1" />
                   IA Insights
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Análises inteligentes da conversa</TooltipContent>
             </Tooltip>
-
             {/* Analytics */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={handleShowAnalytics}>
-                  <TrendingUp className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="h-7 px-2 py-1 text-xs" onClick={handleShowAnalytics}>
+                  <TrendingUp className="h-3 w-3 mr-1" />
                   Analytics
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Estatísticas e métricas</TooltipContent>
             </Tooltip>
-
             {/* Smart Suggestions */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   variant={smartSuggestionMode ? "default" : "outline"} 
                   size="sm" 
+                  className="h-7 px-2 py-1 text-xs"
                   onClick={handleSmartSuggestions}
                 >
-                  <Lightbulb className="h-4 w-4 mr-2" />
+                  <Lightbulb className="h-3 w-3 mr-1" />
                   Sugestões
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Sugestões inteligentes ativadas</TooltipContent>
             </Tooltip>
-
             {/* Time Tracking */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   variant={timeTracking ? "default" : "outline"} 
                   size="sm" 
+                  className="h-7 px-2 py-1 text-xs"
                   onClick={handleTimeTracking}
                 >
-                  <Clock3 className="h-4 w-4" />
+                  <Clock3 className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Rastreamento de tempo</TooltipContent>
             </Tooltip>
-
             {/* Translation */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   variant={translationEnabled ? "default" : "outline"} 
                   size="sm" 
+                  className="h-7 px-2 py-1 text-xs"
                   onClick={handleToggleTranslation}
                 >
-                  <Globe className="h-4 w-4" />
+                  <Globe className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Tradução automática</TooltipContent>
             </Tooltip>
-
             {/* Notifications */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={handleToggleNotifications}>
-                  {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                <Button variant="outline" size="sm" className="h-7 px-2 py-1 text-xs" onClick={handleToggleNotifications}>
+                  {notificationsEnabled ? <Bell className="h-3 w-3" /> : <BellOff className="h-3 w-3" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{notificationsEnabled ? "Desativar notificações" : "Ativar notificações"}</TooltipContent>
             </Tooltip>
-
             {/* Help */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={handleHelpToggle}>
-                  <BookOpen className="h-4 w-4" />
+                <Button variant="outline" size="sm" className="h-7 px-2 py-1 text-xs" onClick={handleHelpToggle}>
+                  <BookOpen className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Ajuda e documentação</TooltipContent>
             </Tooltip>
-            
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={() => setExpandedView(!expandedView)}>
-                  {expandedView ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                <Button variant="outline" size="sm" className="h-7 px-2 py-1 text-xs" onClick={() => setExpandedView(!expandedView)}>
+                  {expandedView ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{expandedView ? "Visualização normal" : "Visualização expandida"}</TooltipContent>
             </Tooltip>
-            
             <Switch
               checked={isDarkMode}
               onCheckedChange={setIsDarkMode}
               aria-label="Tema escuro"
+              className="scale-75"
             />
           </div>
         </header>
 
-        <div className="flex flex-1 h-[calc(100vh-4rem)]">
+        <div className="flex flex-1 h-[calc(100vh-3rem)]">
           {/* Alert System */}
           {activeAlerts.length > 0 && (
             <div className="fixed top-20 right-4 z-50 space-y-2">
@@ -1311,32 +1312,32 @@ function MessagesPage() {
 
           {/* Enhanced Sidebar */}
           <aside className={cn(
-            "border-r bg-muted/30 overflow-hidden flex flex-col",
-            expandedView ? "w-72" : "w-80"
+            "border-r bg-muted/30 overflow-hidden flex flex-col min-w-[180px] max-w-[220px] w-[18vw] md:w-[15vw]",
+            expandedView ? "w-56 md:w-64" : "w-48 md:w-56"
           )}>
             {/* Search and Filter Section */}
-            <div className="p-4 border-b space-y-3">
+            <div className="p-2 md:p-3 border-b space-y-2">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Conversas</h2>
-                <Badge variant="secondary" className="text-xs">
+                <h2 className="text-base font-semibold">Conversas</h2>
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">
                   {filteredConversations.length}
                 </Badge>
               </div>
               
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 <Input
                   placeholder="Buscar conversas..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-7 h-7 text-xs rounded-md"
                 />
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <Select value={filterType} onValueChange={setFilterType}>
-                  <SelectTrigger className="flex-1">
-                    <Filter className="h-4 w-4 mr-2" />
+                  <SelectTrigger className="flex-1 h-7 text-xs">
+                    <Filter className="h-3 w-3 mr-1" />
                     <SelectValue placeholder="Filtros" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1350,8 +1351,8 @@ function MessagesPage() {
                   </SelectContent>
                 </Select>
 
-                <Button variant="outline" size="sm" onClick={() => setConversationTags([])}>
-                  <Tag className="h-4 w-4 mr-1" />
+                <Button variant="outline" size="sm" className="h-7 px-2 py-1 text-xs" onClick={() => setConversationTags([])}>
+                  <Tag className="h-3 w-3 mr-1" />
                   Tags
                 </Button>
               </div>
@@ -1363,7 +1364,7 @@ function MessagesPage() {
                     <Badge 
                       key={tag} 
                       variant="secondary" 
-                      className="text-xs cursor-pointer"
+                      className="text-[10px] px-1.5 py-0.5 cursor-pointer"
                       onClick={() => handleTagManagement(tag)}
                     >
                       <Tag className="h-3 w-3 mr-1" />
@@ -1377,39 +1378,32 @@ function MessagesPage() {
 
             {/* Conversations List */}
             <ScrollArea className="flex-1">
-              <div className="space-y-1 p-2">
+              <div className="space-y-1 p-1 md:p-2">
                 {filteredConversations.map((conv) => (
-                  <div
+                  <button
                     key={conv.id}
+                    type="button"
                     className={cn(
-                      "p-3 rounded-lg cursor-pointer transition-colors relative",
+                      "p-2 md:p-2 rounded-md cursor-pointer transition-colors relative text-left w-full",
                       "hover:bg-muted/80 focus:bg-muted/80 focus:outline-none",
                       selectedConversation?.id === conv.id && "bg-primary/10 border border-primary/20",
                       getPriorityColor(conv.priority)
                     )}
                     onClick={() => setSelectedConversation(conv)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault()
-                        setSelectedConversation(conv)
-                      }
-                    }}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-2 md:gap-2.5">
                       <div className="relative">
-                        <Avatar className="w-12 h-12">
+                        <Avatar className="w-8 h-8 md:w-9 md:h-9">
                           <AvatarImage src={conv.avatar} />
-                          <AvatarFallback className="text-sm font-medium">
+                          <AvatarFallback className="text-xs font-medium">
                             {conv.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
                         {conv.online && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full" />
+                          <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
                         )}
                         <Badge 
-                          className={cn("absolute -top-1 -right-1 text-xs px-1.5", getPlatformColor(conv.platform))}
+                          className={cn("absolute -top-1 -right-1 text-[10px] px-1", getPlatformColor(conv.platform))}
                           variant="secondary"
                         >
                           {conv.platform.slice(0, 2).toUpperCase()}
@@ -1417,16 +1411,16 @@ function MessagesPage() {
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-medium text-sm truncate">{conv.name}</h3>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <h3 className="font-medium text-xs truncate">{conv.name}</h3>
                           <div className="flex items-center gap-1">
-                            {conv.pinned && <Pin className="w-3 h-3 text-primary" />}
-                            {conv.muted && <VolumeX className="w-3 h-3 text-muted-foreground" />}
-                            <span className="text-xs text-muted-foreground">{conv.timestamp}</span>
+                            {conv.pinned && <Pin className="w-2.5 h-2.5 text-primary" />}
+                            {conv.muted && <VolumeX className="w-2.5 h-2.5 text-muted-foreground" />}
+                            <span className="text-[10px] text-muted-foreground">{conv.timestamp}</span>
                           </div>
                         </div>
                         
-                        <p className="text-xs text-muted-foreground truncate mb-2">
+                        <p className="text-[11px] text-muted-foreground truncate mb-1">
                           {conv.typing ? (
                             <span className="flex items-center gap-1">
                               <span className="flex gap-1">
@@ -1444,7 +1438,7 @@ function MessagesPage() {
                         <div className="flex items-center justify-between">
                           <div className="flex flex-wrap gap-1">
                             {conv.tags.slice(0, 2).map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs px-1 py-0">
+                              <Badge key={tag} variant="outline" className="text-[10px] px-1 py-0">
                                 {tag}
                               </Badge>
                             ))}
@@ -1452,7 +1446,7 @@ function MessagesPage() {
                           
                           <div className="flex items-center gap-1">
                             {conv.unread > 0 && (
-                              <Badge className="text-xs min-w-[20px] h-5 flex items-center justify-center">
+                              <Badge className="text-[10px] min-w-[16px] h-4 flex items-center justify-center px-1.5 py-0.5">
                                 {conv.unread > 99 ? "99+" : conv.unread}
                               </Badge>
                             )}
@@ -1460,7 +1454,7 @@ function MessagesPage() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </ScrollArea>
@@ -1471,34 +1465,34 @@ function MessagesPage() {
             {/* Chat Header */}
             <div className="flex items-center justify-between p-4 border-b bg-muted/50">
               <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
+                <Avatar className="w-7 h-7 md:w-8 md:h-8">
                   <AvatarImage src={selectedConversation?.avatar} />
-                  <AvatarFallback>
+                  <AvatarFallback className="text-xs">
                     {selectedConversation?.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold text-sm">{selectedConversation?.name}</h3>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <h3 className="font-semibold text-xs md:text-sm">{selectedConversation?.name}</h3>
+                  <div className="flex items-center gap-1 md:gap-2 text-[11px] md:text-xs text-muted-foreground">
                     <span className={cn("flex items-center gap-1", selectedConversation?.online && "text-green-600")}>
-                      <div className={cn("w-2 h-2 rounded-full", selectedConversation?.online ? "bg-green-500" : "bg-gray-400")} />
+                      <div className={cn("w-1.5 h-1.5 rounded-full", selectedConversation?.online ? "bg-green-500" : "bg-gray-400")} />
                       {selectedConversation?.online ? "Online" : `Visto ${selectedConversation?.lastSeen}`}
                     </span>
-                    <Separator orientation="vertical" className="h-3" />
-                    <Badge className={cn("text-xs", getPlatformColor(selectedConversation?.platform || ""))}>
+                    <Separator orientation="vertical" className="h-2 md:h-3" />
+                    <Badge className={cn("text-[10px] md:text-xs px-1", getPlatformColor(selectedConversation?.platform || ""))}>
                       {selectedConversation?.platform}
                     </Badge>
                     {selectedConversation?.assignedTo && (
                       <>
-                        <Separator orientation="vertical" className="h-3" />
+                        <Separator orientation="vertical" className="h-2 md:h-3" />
                         <span>Atribuído: {selectedConversation.assignedTo}</span>
                       </>
                     )}
                     {timeTracking && (
                       <>
-                        <Separator orientation="vertical" className="h-3" />
+                        <Separator orientation="vertical" className="h-2 md:h-3" />
                         <span className="flex items-center gap-1">
-                          <Clock3 className="h-3 w-3" />
+                          <Clock3 className="h-2.5 w-2.5" />
                           2:35 min
                         </span>
                       </>
@@ -1507,16 +1501,17 @@ function MessagesPage() {
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 {/* Quick Actions for unused icons */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button 
                       variant={quickActionsMode ? "default" : "ghost"} 
                       size="sm"
+                      className="h-7 w-7 px-1"
                       onClick={handleQuickActions}
                     >
-                      <Zap className="h-4 w-4" />
+                      <Zap className="h-3 w-3" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Ações rápidas</TooltipContent>
@@ -1573,11 +1568,11 @@ function MessagesPage() {
             </div>
 
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="flex-1 p-2 md:p-3">
+              <div className="space-y-2 md:space-y-3">
                 {messages.map((msg) => (
                   <div key={msg.id} className={cn("flex", msg.isOwn ? "justify-end" : "justify-start")}>
-                    <div className={cn("max-w-[70%] group", msg.isOwn ? "order-2" : "order-1")}>
+                    <div className={cn("max-w-[80vw] md:max-w-[60%] group", msg.isOwn ? "order-2" : "order-1")}>
                       {/* Reply context */}
                       {msg.replyTo && (
                         <div className="mb-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-t-lg border-l-2 border-primary">
@@ -1591,7 +1586,7 @@ function MessagesPage() {
                       
                       {/* Message bubble */}
                       <div className={cn(
-                        "rounded-lg px-4 py-3 relative",
+                        "rounded-lg px-2 py-1.5 md:px-3 md:py-2 relative text-xs md:text-sm",
                         msg.isOwn 
                           ? "bg-primary text-primary-foreground" 
                           : "bg-muted text-foreground"
@@ -1752,9 +1747,9 @@ function MessagesPage() {
             )}
 
             {/* Quick Replies */}
-            <div className="border-t p-2">
+            <div className="border-t p-1 md:p-2">
               <ScrollArea className="w-full">
-                <div className="flex gap-2 pb-2">
+                <div className="flex gap-1 md:gap-2 pb-1 md:pb-2">
                   {quickReplies.map((reply, index) => (
                     <Button
                       key={index}
@@ -1771,8 +1766,8 @@ function MessagesPage() {
             </div>
 
             {/* Message Input */}
-            <div className="border-t p-4 bg-background">
-              <div className="flex items-end gap-2">
+            <div className="border-t p-2 md:p-3 bg-background">
+              <div className="flex items-end gap-1 md:gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="ghost" size="sm" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
@@ -2144,6 +2139,6 @@ function MessagesPage() {
           )}
         </div>
       </TooltipProvider>
-    </SidebarInset>
+    </div>
   )
 }

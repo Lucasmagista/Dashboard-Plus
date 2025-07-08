@@ -1,0 +1,33 @@
+/* Força o layout correto para a página de mensagens */
+.messages-layout {
+  display: flex !important;
+  width: 100% !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Remove qualquer sidebar fixa - usaremos o layout flexível */
+.messages-sidebar-fixed {
+  display: none !important;
+}
+
+.messages-main-content {
+  width: 100% !important;
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Força a sidebar interna das conversas a aparecer */
+[data-sidebar="sidebar"] {
+  display: flex !important;
+  position: relative !important;
+  transform: none !important;
+}
+
+/* Garante que o conteúdo principal não seja sobreposto */
+[data-sidebar="content"] {
+  margin-left: 0 !important;
+  width: auto !important;
+}

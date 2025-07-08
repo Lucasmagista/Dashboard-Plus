@@ -1,4 +1,9 @@
 import withBundleAnalyzer from '@next/bundle-analyzer'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -45,8 +50,6 @@ const nextConfig = {
     maxInactiveAge: 60 * 1000,
     pagesBufferLength: 2,
   },
-  // Performance improvements
-  swcMinify: true,
   modularizeImports: {
     'lucide-react': {
       transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
@@ -54,8 +57,7 @@ const nextConfig = {
     },
   },
   devIndicators: {
-    appIsrStatus: true,
-    buildActivityPosition: 'bottom-right',
+    position: 'bottom-left',
   },
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
