@@ -43,6 +43,7 @@ const ChartContainer = React.forwardRef<
     >["children"]
   }
 >(({ id, className, children, config, ...props }, ref) => {
+  // React 18: useId está disponível normalmente, mas se migrar para React 17, use um polyfill
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
 

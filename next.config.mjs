@@ -61,70 +61,17 @@ const nextConfig = {
   },
   // Bundle optimization and chunk loading fixes
   webpack: (config, { dev, isServer }) => {
-    // Increase timeout for slower builds
+    // Apenas ajuste seguro: aumentar timeout e publicPath
     config.watchOptions = {
       poll: 1000,
       aggregateTimeout: 300,
       ignored: ['**/node_modules', '**/.git', '**/.next'],
     }
-    
-    // Fix chunk loading issues
     config.output = {
       ...config.output,
       publicPath: '/_next/',
       chunkLoadTimeout: 10000,
     }
-    
-    // Optimize for faster builds in development
-    if (dev) {
-      // Don't disable splitChunks completely in dev to prevent chunk load errors
-      config.optimization.splitChunks = {
-        chunks: 'async',
-        cacheGroups: {
-          default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
-            chunks: 'all'
-          }
-        }
-      }
-      config.cache = {
-        type: 'filesystem',
-        buildDependencies: {
-          config: [__filename],
-        },
-      }
-    }
-    
-    if (!dev && !isServer) {
-      // Optimize CSS loading
-      config.optimization.splitChunks.cacheGroups = {
-        ...config.optimization.splitChunks.cacheGroups,
-        styles: {
-          name: 'styles',
-          test: /\.(css|scss|sass)$/,
-          chunks: 'all',
-          enforce: true,
-          priority: 20,
-        },
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-          priority: 10,
-        }
-      }
-    }
-    
-    // Add retry logic for chunk loading
-    config.optimization.runtimeChunk = 'single'
-    
     return config
   },
 }

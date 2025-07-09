@@ -76,6 +76,7 @@ const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  // React 18: useId está disponível normalmente, mas se migrar para React 17, use um polyfill
   const id = React.useId()
 
   return (
