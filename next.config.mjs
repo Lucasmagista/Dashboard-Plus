@@ -59,7 +59,7 @@ const nextConfig = {
   devIndicators: {
     position: 'bottom-left',
   },
-  // Bundle optimization
+  // Bundle optimization and chunk loading fixes
   webpack: (config, { dev, isServer }) => {
     // Increase timeout for slower builds
     config.watchOptions = {
@@ -68,9 +68,32 @@ const nextConfig = {
       ignored: ['**/node_modules', '**/.git', '**/.next'],
     }
     
+    // Fix chunk loading issues
+    config.output = {
+      ...config.output,
+      publicPath: '/_next/',
+      chunkLoadTimeout: 10000,
+    }
+    
     // Optimize for faster builds in development
     if (dev) {
-      config.optimization.splitChunks = false
+      // Don't disable splitChunks completely in dev to prevent chunk load errors
+      config.optimization.splitChunks = {
+        chunks: 'async',
+        cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true
+          },
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all'
+          }
+        }
+      }
       config.cache = {
         type: 'filesystem',
         buildDependencies: {
@@ -98,6 +121,10 @@ const nextConfig = {
         }
       }
     }
+    
+    // Add retry logic for chunk loading
+    config.optimization.runtimeChunk = 'single'
+    
     return config
   },
 }

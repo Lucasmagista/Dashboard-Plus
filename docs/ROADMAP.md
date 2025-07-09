@@ -403,7 +403,7 @@ Democratizar o acesso a ferramentas avançadas de CRM para empresas de todos os 
 ### 🔮 Roadmap Tecnológico
 
 #### 2025 - Consolidação
-- **Frontend**: Next.js 15, React 19
+- **Frontend**: Next.js 15, React 18
 - **Backend**: Node.js 22, PostgreSQL 16
 - **Cloud**: Multi-cloud strategy
 - **AI/ML**: GPT-5, Custom models

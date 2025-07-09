@@ -8,6 +8,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { CSSOptimizer } from "@/components/css-optimizer"
 import { Toaster } from "@/components/ui/toaster"
+import { ChunkErrorBoundary } from "@/components/chunk-error-boundary"
 import { cookies } from "next/headers"
 
 const inter = Inter({ 
@@ -46,15 +47,17 @@ export default async function RootLayout({
           `
         }} />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <div className="flex min-h-screen w-full bg-background">
-              <AppSidebar />
-              <div className="flex-1 flex flex-col min-w-0 overflow-hidden h-full min-h-screen">
-                {children}
+          <ChunkErrorBoundary>
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <div className="flex min-h-screen w-full bg-background">
+                <AppSidebar />
+                <div className="flex-1 flex flex-col min-w-0 overflow-hidden h-full min-h-screen">
+                  {children}
+                </div>
               </div>
-            </div>
-          </SidebarProvider>
-          <Toaster />
+            </SidebarProvider>
+            <Toaster />
+          </ChunkErrorBoundary>
         </ThemeProvider>
       </body>
     </html>
