@@ -224,7 +224,9 @@ export default function RHPage() {
                 <li>Aprovados: <b>{Object.entries(resumeTags).filter(([resumeId, tags]) => { const r = resumes.find(r => r.id === Number(resumeId)); return tags.includes(internalTagView) && r?.status === 'Aprovado'; }).length}</b></li>
                 <li>Rejeitados: <b>{Object.entries(resumeTags).filter(([resumeId, tags]) => { const r = resumes.find(r => r.id === Number(resumeId)); return tags.includes(internalTagView) && r?.status === 'Rejeitado'; }).length}</b></li>
                 <li>Última movimentação: <b>{(() => {
-                  const all = Object.entries(resumeTags).flatMap(([resumeId, tags]) => tags.includes(internalTagView) ? [resumes.find(r => r.id === Number(resumeId))] : []).filter(Boolean);
+                  const all = Object.entries(resumeTags)
+                    .flatMap(([resumeId, tags]) => tags.includes(internalTagView) ? [resumes.find(r => r.id === Number(resumeId))] : [])
+                    .filter((r): r is Resume => Boolean(r));
                   if (all.length === 0) return '-';
                   return all.map(r => r.date).sort().reverse()[0];
                 })()}</b></li>
@@ -880,6 +882,8 @@ function EmployeeForm({ initial, onSave, onCancel }: EmployeeFormProps) {
           className="block w-full border rounded px-2 py-1 text-sm"
           value={form.status}
           onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+          title="Status do colaborador"
+          aria-label="Status do colaborador"
         >
           <option value="Ativo">Ativo</option>
           <option value="Férias">Férias</option>
