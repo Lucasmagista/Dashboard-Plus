@@ -18,9 +18,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "CRM Pro - Comprehensive SaaS Platform",
-  description: "Complete CRM and business management solution",
-  generator: 'v0.dev'
+  title: "Inaugura Lar - Dashboard Plus",
+  description: "Dashboard Plus é uma solução completa de CRM e gestão empresarial, desenvolvida pela Inaugura Lar, que integra funcionalidades avançadas para otimizar a gestão de negócios.",
+  generator: 'v0.dev - Inaugura Lar',
 }
 
 export default async function RootLayout({
@@ -49,7 +49,7 @@ export default async function RootLayout({
           <SidebarProvider defaultOpen={defaultOpen}>
             <div className="flex min-h-screen w-full bg-background">
               <AppSidebar />
-              <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+              <div className="flex-1 flex flex-col min-w-0 overflow-hidden h-full min-h-screen">
                 {children}
               </div>
             </div>

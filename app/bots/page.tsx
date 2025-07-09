@@ -121,6 +121,9 @@ const botTemplates = [
   },
 ]
 
+// Type definitions
+type BotType = 'nodejs' | 'python' | 'unknown'
+
 export default function BotsPage() {
   // Swipe navigation entre rotas principais
   const bindSwipe = useSwipeNavigation(MAIN_ROUTES)
@@ -143,32 +146,164 @@ export default function BotsPage() {
   // Estado para edição de configuração do bot
   const [configBot, setConfigBot] = useState<any>(null)
 
-  // Upload de pasta do bot local
-  const [botFolderFiles, setBotFolderFiles] = useState<FileList | null>(null)
+  // Upload de pasta do bot local - removida variável não utilizada
   const [analyzingFolder, setAnalyzingFolder] = useState(false)
-  const [analyzeResult, setAnalyzeResult] = useState<{ success: boolean, missing?: string[] } | null>(null)
+  const [analyzeResult, setAnalyzeResult] = useState<{ 
+    success: boolean, 
+    missing?: string[], 
+    found?: string[],
+    totalFiles?: number,
+    botType?: BotType
+  } | null>(null)
+  const [analysisProgress, setAnalysisProgress] = useState(0)
+  const [currentAnalyzing, setCurrentAnalyzing] = useState('')
+  const [installationStatus, setInstallationStatus] = useState<'idle' | 'installing' | 'running' | 'error' | 'success'>('idle')
+  const [installationLogs, setInstallationLogs] = useState<string[]>([])
+  const [botProcess, setBotProcess] = useState<{ pid: number, status: 'running' | 'stopped' } | null>(null)
   const folderInputRef = React.useRef<HTMLInputElement>(null)
 
-  // Arquivos obrigatórios para um bot local funcionar (ajuste conforme sua stack)
-  const REQUIRED_FILES = ["index.js", "package.json"] // ou ["main.py", "requirements.txt"] para Python
+  // Arquivos obrigatórios para diferentes tipos de bot
+  const BOT_REQUIREMENTS = {
+    nodejs: ["package.json", "index.js"],
+    python: ["requirements.txt", "main.py"],
+    alternative_nodejs: ["package.json", "app.js"],
+    alternative_python: ["requirements.txt", "bot.py"]
+  }
+
+  // Funções auxiliares para análise de pasta
+  const detectBotType = (fileNames: string[]) => {
+    let botType: BotType = 'unknown'
+    let requirements: string[] = []
+    
+    if (fileNames.includes('package.json')) {
+      botType = 'nodejs'
+      requirements = fileNames.includes('index.js') ? BOT_REQUIREMENTS.nodejs : BOT_REQUIREMENTS.alternative_nodejs
+    } else if (fileNames.includes('requirements.txt')) {
+      botType = 'python'
+      requirements = fileNames.includes('main.py') ? BOT_REQUIREMENTS.python : BOT_REQUIREMENTS.alternative_python
+    }
+    
+    return { botType, requirements }
+  }
+
+  const performAnalysisSteps = (requirements: string[], fileNames: string[], totalFiles: number, botType: BotType) => {
+    const analysisSteps = [
+      'Verificando estrutura do projeto...',
+      'Analisando dependências...',
+      'Validando arquivos principais...',
+      'Verificando configurações...',
+      'Finalizando análise...'
+    ]
+    
+    const analyzeStep = (stepIndex: number) => {
+      if (stepIndex >= analysisSteps.length) {
+        const foundFiles = requirements.filter(req => fileNames.includes(req))
+        const missingFiles = requirements.filter(req => !fileNames.includes(req))
+        
+        setAnalyzeResult({
+          success: missingFiles.length === 0,
+          missing: missingFiles,
+          found: foundFiles,
+          totalFiles,
+          botType
+        })
+        setAnalyzingFolder(false)
+        setAnalysisProgress(100)
+        setCurrentAnalyzing('Análise concluída!')
+        return
+      }
+      
+      setCurrentAnalyzing(analysisSteps[stepIndex])
+      setAnalysisProgress((stepIndex + 1) * 20)
+      
+      setTimeout(() => analyzeStep(stepIndex + 1), 800)
+    }
+    
+    analyzeStep(0)
+  }
 
   function handleFolderChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
-    setBotFolderFiles(files)
     setAnalyzeResult(null)
+    setAnalysisProgress(0)
+    setCurrentAnalyzing('')
+    
     if (!files || files.length === 0) return
+    
     setAnalyzingFolder(true)
-    setTimeout(() => {
-      // Coleta todos os nomes de arquivos (apenas basename)
-      const fileNames = Array.from(files).map(f => f.webkitRelativePath.split("/").pop() || f.name)
-      const missing = REQUIRED_FILES.filter(req => !fileNames.includes(req))
-      if (missing.length === 0) {
-        setAnalyzeResult({ success: true })
-      } else {
-        setAnalyzeResult({ success: false, missing })
-      }
-      setAnalyzingFolder(false)
-    }, 1200) // Simula tempo de análise
+    
+    const fileNames = Array.from(files).map(f => f.webkitRelativePath.split("/").pop() || f.name)
+    const totalFiles = files.length
+    
+    const { botType, requirements } = detectBotType(fileNames)
+    performAnalysisSteps(requirements, fileNames, totalFiles, botType)
+  }
+
+  // Funções de gerenciamento do bot
+  const runInstallationSteps = async () => {
+    const steps = [
+      'Extraindo arquivos...',
+      'Instalando dependências...',
+      'Configurando ambiente...',
+      'Verificando conectividade...',
+      'Instalação concluída!'
+    ]
+    
+    for (const step of steps) {
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      setInstallationLogs(prev => [...prev, step])
+    }
+  }
+
+  // Funções para gerenciar o bot
+  const handleInstallBot = async () => {
+    if (!configBot) return
+    
+    setInstallationStatus('installing')
+    setInstallationLogs(['Iniciando instalação...'])
+    
+    await runInstallationSteps()
+    setInstallationStatus('success')
+  }
+  
+  const handleStartBot = async () => {
+    if (!configBot) return
+    
+    setInstallationStatus('running')
+    setInstallationLogs(prev => [...prev, 'Iniciando bot...'])
+    
+    // Simula inicialização
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    setBotProcess({ pid: Math.floor(Math.random() * 10000) + 1000, status: 'running' })
+    setInstallationLogs(prev => [...prev, `Bot iniciado com PID ${Math.floor(Math.random() * 10000) + 1000}`, 'Bot está rodando e pronto para receber mensagens'])
+  }
+  
+  const handleStopBot = async () => {
+    if (!botProcess) return
+    
+    setInstallationLogs(prev => [...prev, `Parando bot (PID: ${botProcess.pid})...`])
+    
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    setBotProcess({ ...botProcess, status: 'stopped' })
+    setInstallationLogs(prev => [...prev, 'Bot parado com sucesso'])
+    setInstallationStatus('success')
+  }
+  
+  const handleRestartBot = async () => {
+    await handleStopBot()
+    await new Promise(resolve => setTimeout(resolve, 500))
+    await handleStartBot()
+  }
+
+  // Funções auxiliares para reduzir complexidade
+  const getBotTypeLabel = (botType?: 'nodejs' | 'python' | 'unknown') => {
+    switch (botType) {
+      case 'nodejs': return 'Node.js'
+      case 'python': return 'Python'
+      default: return 'Desconhecido'
+    }
   }
 
   const getStatusColor = (status: string) => {
@@ -218,41 +353,45 @@ export default function BotsPage() {
     setDeleteBot(null)
   }
 
-  const handleCreateBot = () => {
-    let newBot
-    if (selectedTemplate) {
-      newBot = {
-        id: Date.now(),
-        name: `Bot ${selectedTemplate.name}`,
-        type: "cloud",
-        platform: selectedTemplate.platforms[0],
-        status: "active",
-        description: selectedTemplate.description,
-        responses: 0,
-        accuracy: 90,
-        uptime: 100,
-        lastActive: "agora",
-        created: new Date().toISOString().slice(0, 10)
-      }
-    } else {
-      newBot = {
-        id: Date.now(),
-        name: customBotForm.name,
-        type: customBotForm.type,
-        platform: customBotForm.platform,
-        status: "active",
-        description: customBotForm.description,
-        responses: 0,
-        accuracy: 90,
-        uptime: 100,
-        lastActive: "agora",
-        created: new Date().toISOString().slice(0, 10)
-      }
-    }
-    setBots((prev) => [...prev, newBot])
+  // Funções de criação e configuração de bots
+  const createBotFromTemplate = (template: any) => ({
+    id: Date.now(),
+    name: `Bot ${template.name}`,
+    type: "cloud",
+    platform: template.platforms[0],
+    status: "active",
+    description: template.description,
+    responses: 0,
+    accuracy: 90,
+    uptime: 100,
+    lastActive: "agora",
+    created: new Date().toISOString().slice(0, 10)
+  })
+
+  const createBotFromForm = () => ({
+    id: Date.now(),
+    name: customBotForm.name,
+    type: customBotForm.type,
+    platform: customBotForm.platform,
+    status: "active",
+    description: customBotForm.description,
+    responses: 0,
+    accuracy: 90,
+    uptime: 100,
+    lastActive: "agora",
+    created: new Date().toISOString().slice(0, 10)
+  })
+
+  const resetCreateBotState = () => {
     setIsCreateBotOpen(false)
     setSelectedTemplate(null)
     setCustomBotForm({ name: "", type: "local", platform: "WhatsApp", description: "" })
+  }
+
+  const handleCreateBot = () => {
+    const newBot = selectedTemplate ? createBotFromTemplate(selectedTemplate) : createBotFromForm()
+    setBots((prev) => [...prev, newBot])
+    resetCreateBotState()
   }
 
   const handleConfigureBot = (bot: any) => {
@@ -657,8 +796,9 @@ export default function BotsPage() {
             </DialogHeader>
             {configBot && (
               <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                   <TabsTrigger value="general">Geral</TabsTrigger>
+                  <TabsTrigger value="management">Gerenciamento</TabsTrigger>
                   <TabsTrigger value="responses">Respostas</TabsTrigger>
                   <TabsTrigger value="triggers">Disparadores</TabsTrigger>
                   <TabsTrigger value="analytics">Análises</TabsTrigger>
@@ -666,131 +806,439 @@ export default function BotsPage() {
 
                 {/* Aba Geral */}
                 <TabsContent value="general" className="space-y-4">
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="config-name" className="text-right">Nome</Label>
-                      <Input id="config-name" value={configBot.name} onChange={e => setConfigBot((prev:any) => ({ ...prev, name: e.target.value }))} className="col-span-3" />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="config-description" className="text-right">Descrição</Label>
-                      <Textarea id="config-description" value={configBot.description} onChange={e => setConfigBot((prev:any) => ({ ...prev, description: e.target.value }))} className="col-span-3" />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="config-type" className="text-right">Tipo</Label>
-                      <Select value={configBot.type} onValueChange={v => setConfigBot((prev:any) => ({ ...prev, type: v }))}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Selecione o tipo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="local">Bot Local</SelectItem>
-                          <SelectItem value="cloud">Bot na Nuvem</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="config-platform" className="text-right">Plataforma</Label>
-                      <Select value={configBot.platform} onValueChange={v => setConfigBot((prev:any) => ({ ...prev, platform: v }))}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Selecione a plataforma" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                          <SelectItem value="Telegram">Telegram</SelectItem>
-                          <SelectItem value="Website">Website</SelectItem>
-                          <SelectItem value="Email">Email</SelectItem>
-                          <SelectItem value="Facebook">Facebook</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {configBot.type === "local" && (
-                      <>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="config-bot-folder" className="text-right">Upload da Pasta do Bot</Label>
-                          <div className="col-span-3 flex flex-col gap-2">
-                            <input
-                              id="config-bot-folder"
-                              type="file"
-                              ref={folderInputRef}
-                              style={{ display: 'none' }}
-                              multiple
-                              onChange={handleFolderChange}
-                              // @ts-ignore
-                              webkitdirectory=""
-                              // @ts-ignore
-                              directory=""
-                              title="Selecione a pasta do bot"
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => folderInputRef.current?.click()}
-                              disabled={analyzingFolder}
-                            >
-                              Selecionar Pasta
-                            </Button>
-                            {botFolderFiles && (
-                              <span className="text-xs text-muted-foreground">{botFolderFiles.length} arquivos selecionados</span>
-                            )}
-                            {analyzingFolder && (
-                              <div className="flex items-center gap-2 mt-2 animate-pulse">
-                                <svg className="animate-spin h-5 w-5 text-blue-600" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                                </svg>
-                                <span>Analisando arquivos da pasta...</span>
-                              </div>
-                            )}
-                            {analyzeResult && (
-                              <div className="flex items-center gap-2 mt-2">
-                                {analyzeResult.success ? (
-                                  <span className="text-green-600 font-medium flex items-center gap-1 animate-bounce">
-                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                    Pasta válida! Todos os arquivos necessários encontrados.
-                                  </span>
-                                ) : (
-                                  <span className="text-red-600 font-medium flex items-center gap-1 animate-shake">
-                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                    Faltando arquivos: {analyzeResult.missing?.join(", ")}
-                                  </span>
+                  <div className="max-h-[60vh] overflow-y-auto px-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Nome */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-name">Nome</Label>
+                        <Input id="config-name" value={configBot.name} onChange={e => setConfigBot((prev:any) => ({ ...prev, name: e.target.value }))} />
+                        <span className="text-xs text-muted-foreground">Nome do bot para identificação interna.</span>
+                      </div>
+                      {/* Descrição */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-description">Descrição</Label>
+                        <Textarea id="config-description" value={configBot.description} onChange={e => setConfigBot((prev:any) => ({ ...prev, description: e.target.value }))} />
+                        <span className="text-xs text-muted-foreground">Breve descrição da função do bot.</span>
+                      </div>
+                      {/* Tipo */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-type">Tipo</Label>
+                        <Select value={configBot.type} onValueChange={v => setConfigBot((prev:any) => ({ ...prev, type: v }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="local">Bot Local</SelectItem>
+                            <SelectItem value="cloud">Bot na Nuvem</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="text-xs text-muted-foreground">Onde o bot será executado.</span>
+                      </div>
+                      {/* Plataforma */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-platform">Plataforma</Label>
+                        <Select value={configBot.platform} onValueChange={v => setConfigBot((prev:any) => ({ ...prev, platform: v }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a plataforma" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                            <SelectItem value="Telegram">Telegram</SelectItem>
+                            <SelectItem value="Website">Website</SelectItem>
+                            <SelectItem value="Email">Email</SelectItem>
+                            <SelectItem value="Facebook">Facebook</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="text-xs text-muted-foreground">Canal principal de atuação do bot.</span>
+                      </div>
+                      {/* Porta */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-port">Porta</Label>
+                        <Input id="config-port" type="number" placeholder="Ex: 3000" value={configBot.port} onChange={e => setConfigBot((prev:any) => ({ ...prev, port: e.target.value }))} />
+                        <span className="text-xs text-muted-foreground">Porta de execução do bot local.</span>
+                      </div>
+                      {/* Token/API Key */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-token">Token/API Key</Label>
+                        <Input id="config-token" type="text" placeholder="Token de autenticação" value={configBot.token} onChange={e => setConfigBot((prev:any) => ({ ...prev, token: e.target.value }))} />
+                        <span className="text-xs text-muted-foreground">Chave de autenticação para integrações.</span>
+                      </div>
+                      {/* Variáveis de Ambiente */}
+                      <div className="flex flex-col gap-1 md:col-span-2">
+                        <Label htmlFor="config-env">Variáveis de Ambiente</Label>
+                        <Textarea id="config-env" placeholder={"CHAVE1=valor1\nCHAVE2=valor2"} value={configBot.env} onChange={e => setConfigBot((prev:any) => ({ ...prev, env: e.target.value }))} rows={3} />
+                        <span className="text-xs text-muted-foreground">Variáveis no formato CHAVE=valor, uma por linha.</span>
+                      </div>
+                      {/* Upload de Pasta do Bot */}
+                      <div className="flex flex-col gap-1 md:col-span-2">
+                        <Label>Upload da Pasta do Bot</Label>
+                        <input
+                          type="file"
+                          multiple
+                          ref={folderInputRef}
+                          title="Selecione a pasta do bot"
+                          className="block w-full text-sm text-muted-foreground border border-input rounded-md file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                          onChange={handleFolderChange}
+                          {...({ webkitdirectory: "true" } as any)}
+                        />
+                        
+                        {/* Análise em progresso */}
+                        {analyzingFolder && (
+                          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                              <span className="text-sm font-medium text-blue-700">Analisando arquivos...</span>
+                            </div>
+                            <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
+                              <Progress value={analysisProgress} className="h-2" />
+                            </div>
+                            <p className="text-xs text-blue-600">{currentAnalyzing}</p>
+                          </div>
+                        )}
+                        
+                        {/* Resultado da análise */}
+                        {analyzeResult && !analyzingFolder && (
+                          <div className={`mt-2 p-3 rounded-md border ${
+                            analyzeResult.success 
+                              ? 'bg-green-50 border-green-200' 
+                              : 'bg-red-50 border-red-200'
+                          }`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              {analyzeResult.success ? (
+                                <div className="h-4 w-4 text-green-600">
+                                  <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                              ) : (
+                                <div className="h-4 w-4 text-red-600">
+                                  <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </div>
+                              )}
+                              <span className={`text-sm font-medium ${
+                                analyzeResult.success ? 'text-green-700' : 'text-red-700'
+                              }`}>
+                                {analyzeResult.success ? 'Pasta válida!' : 'Problemas encontrados'}
+                              </span>
+                            </div>
+                            
+                            <div className="text-xs space-y-1">
+                              <p className="text-gray-600">
+                                <strong>Tipo detectado:</strong> {getBotTypeLabel(analyzeResult.botType)}
+                              </p>
+                              <p className="text-gray-600">
+                                <strong>Total de arquivos:</strong> {analyzeResult.totalFiles}
+                              </p>
+                              
+                              {analyzeResult.found && analyzeResult.found.length > 0 && (
+                                <p className="text-green-600">
+                                  <strong>Arquivos encontrados:</strong> {analyzeResult.found.join(', ')}
+                                </p>
+                              )}
+                              
+                              {analyzeResult.missing && analyzeResult.missing.length > 0 && (
+                                <p className="text-red-600">
+                                  <strong>Arquivos faltando:</strong> {analyzeResult.missing.join(', ')}
+                                </p>
+                              )}
+                            </div>
+                            
+                            {/* Botões de ação após análise bem-sucedida */}
+                            {analyzeResult.success && (
+                              <div className="mt-3 flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={handleInstallBot}
+                                  disabled={installationStatus === 'installing'}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  {installationStatus === 'installing' ? 'Instalando...' : 'Instalar'}
+                                </Button>
+                                {installationStatus === 'success' && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={handleStartBot}
+                                    disabled={botProcess?.status === 'running'}
+                                  >
+                                    Iniciar Bot
+                                  </Button>
+                                )}
+                                {botProcess?.status === 'running' && (
+                                  <>
+                                    <Button size="sm" variant="outline" onClick={handleStopBot}>
+                                      Parar
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={handleRestartBot}>
+                                      Reiniciar
+                                    </Button>
+                                  </>
                                 )}
                               </div>
                             )}
                           </div>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="config-port" className="text-right">Porta</Label>
-                          <Input id="config-port" type="number" placeholder="Ex: 3000" className="col-span-3" value={configBot.port} onChange={e => setConfigBot((prev:any) => ({ ...prev, port: e.target.value }))} />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="config-token" className="text-right">Token/API Key</Label>
-                          <Input id="config-token" type="text" placeholder="Token de autenticação" className="col-span-3" value={configBot.token} onChange={e => setConfigBot((prev:any) => ({ ...prev, token: e.target.value }))} />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="config-env" className="text-right">Variáveis de Ambiente</Label>
-                          <Textarea id="config-env" placeholder="CHAVE1=valor1\nCHAVE2=valor2" className="col-span-3" value={configBot.env} onChange={e => setConfigBot((prev:any) => ({ ...prev, env: e.target.value }))} />
-                        </div>
-                      </>
-                    )}
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label className="text-right">Resposta automática</Label>
-                      <div className="col-span-3 flex items-center space-x-2">
-                        <Switch checked={configBot.autoReply} onCheckedChange={v => setConfigBot((prev:any) => ({ ...prev, autoReply: v }))} />
-                        <span className="text-sm">Habilitar respostas automáticas</span>
+                        )}
+                        
+                        {/* Logs de instalação */}
+                        {installationLogs.length > 0 && (
+                          <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                            <h4 className="text-sm font-medium text-gray-700 mb-2">Logs de Instalação</h4>
+                            <div className="max-h-32 overflow-y-auto space-y-1">
+                              {installationLogs.map((log) => (
+                                <p key={log} className="text-xs text-gray-600 font-mono">
+                                  {log}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Status do processo */}
+                        {botProcess && (
+                          <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-blue-700">
+                                <strong>PID:</strong> {botProcess.pid} | <strong>Status:</strong> {botProcess.status}
+                              </span>
+                              <div className={`h-2 w-2 rounded-full ${
+                                botProcess.status === 'running' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
+                              }`}></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      {/* Resposta Automática */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-auto-reply">Resposta automática</Label>
+                        <Switch id="config-auto-reply" checked={configBot.autoReply} onCheckedChange={v => setConfigBot((prev:any) => ({ ...prev, autoReply: v }))} />
+                        <span className="text-xs text-muted-foreground">Habilitar respostas automáticas.</span>
+                      </div>
+                      {/* Atraso de Resposta */}
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor="config-reply-delay">Atraso de Resposta</Label>
+                        <Select value={configBot.replyDelay} onValueChange={v => setConfigBot((prev:any) => ({ ...prev, replyDelay: v }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o atraso" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="instant">Instantâneo</SelectItem>
+                            <SelectItem value="1s">1 segundo</SelectItem>
+                            <SelectItem value="3s">3 segundos</SelectItem>
+                            <SelectItem value="5s">5 segundos</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="text-xs text-muted-foreground">Tempo de espera antes de responder.</span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label className="text-right">Atraso de Resposta</Label>
-                      <Select value={configBot.replyDelay} onValueChange={v => setConfigBot((prev:any) => ({ ...prev, replyDelay: v }))}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Selecione o atraso" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="instant">Instantâneo</SelectItem>
-                          <SelectItem value="1s">1 segundo</SelectItem>
-                          <SelectItem value="3s">3 segundos</SelectItem>
-                          <SelectItem value="5s">5 segundos</SelectItem>
-                        </SelectContent>
-                      </Select>
+                  </div>
+                </TabsContent>
+
+                {/* Aba Gerenciamento */}
+                <TabsContent value="management" className="space-y-4">
+                  <div className="max-h-[60vh] overflow-y-auto px-1">
+                    <div className="space-y-6">
+                      {/* Status do Bot */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Card>
+                          <CardContent className="pt-4">
+                            <div className="text-center">
+                              <div className={`h-12 w-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                                botProcess?.status === 'running' ? 'bg-green-100' : 'bg-gray-100'
+                              }`}>
+                                <div className={`h-6 w-6 rounded-full ${
+                                  botProcess?.status === 'running' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
+                                }`}></div>
+                              </div>
+                              <p className="text-sm font-medium">Status</p>
+                              <p className="text-xs text-muted-foreground">
+                                {botProcess?.status === 'running' ? 'Executando' : 'Parado'}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardContent className="pt-4">
+                            <div className="text-center">
+                              <div className="h-12 w-12 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-2">
+                                <Server className="h-6 w-6 text-blue-600" />
+                              </div>
+                              <p className="text-sm font-medium">PID</p>
+                              <p className="text-xs text-muted-foreground">
+                                {botProcess?.pid || 'N/A'}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardContent className="pt-4">
+                            <div className="text-center">
+                              <div className="h-12 w-12 mx-auto rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                                <Activity className="h-6 w-6 text-purple-600" />
+                              </div>
+                              <p className="text-sm font-medium">Uptime</p>
+                              <p className="text-xs text-muted-foreground">
+                                {botProcess?.status === 'running' ? '1h 23m' : '0m'}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                      
+                      {/* Controles do Bot */}
+                      <div className="border rounded-lg p-4">
+                        <h3 className="text-lg font-semibold mb-4">Controles do Bot</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-3">
+                            <Button 
+                              className="w-full"
+                              onClick={handleInstallBot}
+                              disabled={installationStatus === 'installing' || !analyzeResult?.success}
+                            >
+                              {installationStatus === 'installing' ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                  Instalando...
+                                </>
+                              ) : (
+                                'Instalar Dependências'
+                              )}
+                            </Button>
+                            
+                            <Button 
+                              className="w-full"
+                              variant="outline"
+                              onClick={handleStartBot}
+                              disabled={installationStatus !== 'success' || botProcess?.status === 'running'}
+                            >
+                              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <polygon points="5,3 19,12 5,21" />
+                              </svg>
+                              Iniciar Bot
+                            </Button>
+                            
+                            <Button 
+                              className="w-full"
+                              variant="outline"
+                              onClick={handleStopBot}
+                              disabled={botProcess?.status !== 'running'}
+                            >
+                              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <rect x="6" y="4" width="4" height="16" />
+                                <rect x="14" y="4" width="4" height="16" />
+                              </svg>
+                              Parar Bot
+                            </Button>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <Button 
+                              className="w-full"
+                              variant="outline"
+                              onClick={handleRestartBot}
+                              disabled={botProcess?.status !== 'running'}
+                            >
+                              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <polyline points="23,4 23,10 17,10" />
+                                <polyline points="1,20 1,14 7,14" />
+                                <path d="M20.49,9A9,9,0,0,0,5.64,5.64L1,10" />
+                                <path d="M3.51,15a9,9,0,0,0,14.85,4.36L23,14" />
+                              </svg>
+                              Reiniciar Bot
+                            </Button>
+                            
+                            <Button 
+                              className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                              variant="outline"
+                              onClick={() => {
+                                setInstallationLogs([])
+                                setInstallationStatus('idle')
+                                setBotProcess(null)
+                              }}
+                            >
+                              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              Limpar Dados
+                            </Button>
+                            
+                            <Button 
+                              className="w-full"
+                              variant="outline"
+                              onClick={() => window.open(`http://localhost:${configBot?.port || 3000}`, '_blank')}
+                              disabled={botProcess?.status !== 'running'}
+                            >
+                              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                              Abrir Interface
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Monitoramento em Tempo Real */}
+                      <div className="border rounded-lg p-4">
+                        <h3 className="text-lg font-semibold mb-4">Monitoramento</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-sm font-medium">CPU</Label>
+                            <div className="mt-1">
+                              <Progress value={botProcess?.status === 'running' ? 15 : 0} className="h-2" />
+                              <span className="text-xs text-muted-foreground">
+                                {botProcess?.status === 'running' ? '15%' : '0%'}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium">Memória</Label>
+                            <div className="mt-1">
+                              <Progress value={botProcess?.status === 'running' ? 32 : 0} className="h-2" />
+                              <span className="text-xs text-muted-foreground">
+                                {botProcess?.status === 'running' ? '128MB / 400MB' : '0MB'}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium">Mensagens Processadas</Label>
+                            <div className="text-2xl font-bold">
+                              {botProcess?.status === 'running' ? '1,247' : '0'}
+                            </div>
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium">Taxa de Resposta</Label>
+                            <div className="text-2xl font-bold">
+                              {botProcess?.status === 'running' ? '94%' : '0%'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Console de Logs */}
+                      {installationLogs.length > 0 && (
+                        <div className="border rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">Console</h3>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setInstallationLogs([])}
+                            >
+                              Limpar
+                            </Button>
+                          </div>
+                          <div className="bg-gray-900 text-green-400 p-3 rounded-md font-mono text-sm max-h-40 overflow-y-auto">
+                            {installationLogs.map((log) => (
+                              <div key={log} className="mb-1">
+                                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span> {log}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </TabsContent>

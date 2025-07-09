@@ -1,7 +1,19 @@
+/* Correção global para garantir altura total e eliminar barras pretas */
+html, body, #__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #000;
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Barra de progresso dinâmica para análise de bot */
+.progress-bar {
+  transition: width 0.3s ease-out;
+}
 
 @layer base {
   * {

@@ -327,7 +327,7 @@ export default function Dashboard() {
           <Card className="lg:col-span-4">
             <CardHeader>
               <CardTitle>Atividades Recentes</CardTitle>
-              <CardDescription>Últimas atualizações do seu CRM</CardDescription>
+              <CardDescription>Últimas atualizações da sua Dashboard</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
