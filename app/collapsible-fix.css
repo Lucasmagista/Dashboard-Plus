@@ -1,4 +1,18 @@
-/* Correção específica para ocultar botões de expansão quando sidebar colapsada */
+/* Mensagem de erro de chunk para recarregamento automático */
+.chunk-error-reload-message {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}/* Correção específica para ocultar botões de expansão quando sidebar colapsada */
 
 /* REGRA PRINCIPAL: Ocultar botão de expandir/recolher submenu quando sidebar colapsada */
 .group\/sidebar-wrapper[data-state="collapsed"] .group\/collapsible [data-radix-collapsible-trigger],

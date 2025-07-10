@@ -813,7 +813,7 @@ export function VisualWorkflowWidget() {
                 </div>
 
                 {/* Canvas */}
-                <div className="flex-1 p-4 overflow-auto bg-gray-50">
+                <div className="flex-1 p-4 overflow-auto bg-muted">
                   <div className="relative min-h-full">
                     {nodes.length === 0 ? (
                       <div className="text-center py-16 text-muted-foreground">
@@ -827,7 +827,7 @@ export function VisualWorkflowWidget() {
                           <div key={node.id} className="flex items-center gap-4">
                             {index > 0 && <ArrowDown className="h-6 w-6 text-muted-foreground mx-auto" />}
                             <div 
-                              className={`p-4 border rounded-lg bg-white cursor-pointer transition-all ${
+                              className={`p-4 border rounded-lg bg-card cursor-pointer transition-all ${
                                 selectedNode?.id === node.id ? 'ring-2 ring-primary' : ''
                               }`}
                               onClick={() => setSelectedNode(node)}

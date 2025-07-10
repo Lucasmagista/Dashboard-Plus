@@ -229,7 +229,7 @@ export function SalesPipelineWidget() {
               
               <div className="space-y-2">
                 {stage.deals.map((deal) => (
-                  <div key={deal.id} className="bg-white p-3 rounded-lg border shadow-sm">
+                  <div key={deal.id} className="bg-card p-3 rounded-lg border shadow-sm">
                     <div className="flex items-start justify-between mb-2">
                       <h5 className="font-medium text-sm line-clamp-2">{deal.title}</h5>
                       <Button variant="ghost" size="icon" className="h-6 w-6">

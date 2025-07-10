@@ -144,7 +144,7 @@ export function SmartTemplatesWidget() {
           {filteredTemplates.map((template) => (
             <button
               key={template.id}
-              className="w-full border rounded-lg p-3 text-left hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-lg p-3 text-left hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               onClick={() => selectTemplate(template)}
             >
               <div className="flex items-start justify-between mb-2">

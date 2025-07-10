@@ -401,7 +401,7 @@ export function EmailSettings() {
                     <span className="font-medium">SPF Record</span>
                     <Badge variant="outline" className="text-green-600">Configurado</Badge>
                   </div>
-                  <code className="text-xs bg-white p-2 rounded block">
+                  <code className="text-xs bg-muted p-2 rounded block">
                     v=spf1 include:mailersend.net ~all
                   </code>
                 </div>
@@ -411,7 +411,7 @@ export function EmailSettings() {
                     <span className="font-medium">DKIM Record</span>
                     <Badge variant="outline" className="text-yellow-600">Pendente</Badge>
                   </div>
-                  <code className="text-xs bg-white p-2 rounded block">
+                  <code className="text-xs bg-muted p-2 rounded block">
                     fm1._domainkey IN TXT "k=rsa; p=MIGfMA0G..."
                   </code>
                 </div>
@@ -421,7 +421,7 @@ export function EmailSettings() {
                     <span className="font-medium">DMARC Record</span>
                     <Badge variant="outline" className="text-red-600">Não Configurado</Badge>
                   </div>
-                  <code className="text-xs bg-white p-2 rounded block">
+                  <code className="text-xs bg-muted p-2 rounded block">
                     v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com
                   </code>
                 </div>
@@ -814,7 +814,7 @@ function TemplateManager() {
                 </TabsContent>
                 
                 <TabsContent value="rendered" className="mt-4">
-                  <div className="border rounded-lg p-4 bg-white">
+                  <div className="border rounded-lg p-4 bg-card">
                     <div dangerouslySetInnerHTML={{ __html: previewTemplate.html || previewTemplate.text }} />
                   </div>
                 </TabsContent>

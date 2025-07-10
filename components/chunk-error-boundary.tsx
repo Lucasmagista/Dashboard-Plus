@@ -1,12 +1,12 @@
-"use client"
 
-import { useEffect } from 'react'
+"use client"
+import React, { useEffect, useState } from 'react'
 
 interface ChunkErrorBoundaryProps {
   children: React.ReactNode
 }
 
-export function ChunkErrorBoundary({ children }: ChunkErrorBoundaryProps) {
+export function ChunkErrorBoundary({ children }: Readonly<ChunkErrorBoundaryProps>) {
   useEffect(() => {
     // Intercepta erros de carregamento de chunks
     const handleChunkError = (event: ErrorEvent) => {
@@ -14,16 +14,16 @@ export function ChunkErrorBoundary({ children }: ChunkErrorBoundaryProps) {
       
       if (error && error.name === 'ChunkLoadError') {
         console.warn('Chunk load error detected, reloading page...', error)
-        
-        // Força reload da página para resolver o problema
-        window.location.reload()
+        setShowReloadMessage(true)
+        setTimeout(() => window.location.reload(), 2000)
         return
       }
       
       // Intercepta erros de rede/carregamento
-      if (event.message && event.message.includes('Loading chunk')) {
+      if (event.message?.includes('Loading chunk')) {
         console.warn('Chunk loading failed, attempting reload...')
-        window.location.reload()
+        setShowReloadMessage(true)
+        setTimeout(() => window.location.reload(), 2000)
       }
     }
 
@@ -37,8 +37,9 @@ export function ChunkErrorBoundary({ children }: ChunkErrorBoundaryProps) {
         error.name === 'ChunkLoadError'
       )) {
         console.warn('Chunk load error in promise, reloading...', error)
+        setShowReloadMessage(true)
         event.preventDefault()
-        window.location.reload()
+        setTimeout(() => window.location.reload(), 2000)
       }
     }
 
@@ -49,9 +50,10 @@ export function ChunkErrorBoundary({ children }: ChunkErrorBoundaryProps) {
       if (target && target.tagName === 'SCRIPT') {
         const src = (target as HTMLScriptElement).src
         
-        if (src && src.includes('/_next/static/chunks/')) {
+        if (src?.includes('/_next/static/chunks/')) {
           console.warn('Script chunk failed to load, reloading...', src)
-          window.location.reload()
+          setShowReloadMessage(true)
+          setTimeout(() => window.location.reload(), 2000)
         }
       }
     }
@@ -68,5 +70,13 @@ export function ChunkErrorBoundary({ children }: ChunkErrorBoundaryProps) {
     }
   }, [])
 
-  return <>{children}</>
+  const [showReloadMessage, setShowReloadMessage] = useState(false)
+  return <>
+    {showReloadMessage && (
+      <div className="chunk-error-reload-message">
+        Ocorreu um erro de carregamento. Recarregando a página...
+      </div>
+    )}
+    {children}
+  </>
 }

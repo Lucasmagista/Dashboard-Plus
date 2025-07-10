@@ -88,8 +88,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   }
 
   return (
-    <div className="w-80 max-w-full bg-white dark:bg-zinc-900 rounded-lg shadow-lg flex flex-col border border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-bottom-8">
-      <div className="flex items-center gap-2 p-3 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 rounded-t-lg relative">
+    <div className="w-80 max-w-full bg-background dark:bg-zinc-900 rounded-lg shadow-lg flex flex-col border border-zinc-200 dark:border-zinc-800 animate-in fade-in slide-in-from-bottom-8">
+      <div className="flex items-center gap-2 p-3 border-b border-zinc-100 dark:border-zinc-800 bg-muted dark:bg-zinc-800 rounded-t-lg relative">
         <MessageCircle className="w-5 h-5 text-primary" />
         <span className="font-semibold text-sm flex-1 truncate">{title}</span>
         {onClose && (
@@ -129,7 +129,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       <div className="p-2 border-t border-zinc-100 dark:border-zinc-800 flex gap-1">
         <input
           ref={inputRef}
-          className="flex-1 rounded border border-zinc-200 dark:border-zinc-700 px-2 py-1 text-sm bg-white dark:bg-zinc-900 focus:outline-none"
+          className="flex-1 rounded border border-zinc-200 dark:border-zinc-700 px-2 py-1 text-sm bg-background dark:bg-zinc-900 focus:outline-none"
           placeholder={placeholder}
           value={input}
           onChange={e => setInput(e.target.value)}

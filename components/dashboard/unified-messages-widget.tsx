@@ -253,7 +253,7 @@ export function UnifiedMessagesWidget() {
                     <div 
                       key={message.id} 
                       className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        selectedMessage?.id === message.id ? 'bg-blue-50 border-blue-300' : 'hover:bg-gray-50'
+                        selectedMessage?.id === message.id ? 'bg-blue-50 border-blue-300' : 'hover:bg-muted'
                       } ${message.status === 'unread' ? 'border-l-4 border-l-red-500' : ''}`}
                       onClick={() => setSelectedMessage(message)}
                     >

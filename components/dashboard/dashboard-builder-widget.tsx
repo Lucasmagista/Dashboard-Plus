@@ -103,7 +103,7 @@ export const DashboardBuilderWidget: React.FC = () => {
               key={widget.id}
               draggable
               onDragStart={(e) => handleDragStart(e, widget.id)}
-              className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 border rounded cursor-move hover:shadow-md transition-shadow"
+              className="flex items-center justify-between p-2 bg-card dark:bg-gray-800 border rounded cursor-move hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-2">
                 <GripVertical className="w-4 h-4 text-gray-400" />

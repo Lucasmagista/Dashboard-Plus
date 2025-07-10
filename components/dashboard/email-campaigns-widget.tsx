@@ -246,7 +246,7 @@ export function EmailCampaignsWidget() {
                         )}
                       </h5>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white p-3 rounded border">
+                        <div className="bg-card p-3 rounded border">
                           <h6 className="font-medium text-sm mb-2">Variante A</h6>
                           <p className="text-sm text-gray-600 mb-2">{campaign.abTest.variantA.subject}</p>
                           <div className="space-y-1 text-xs">
@@ -264,7 +264,7 @@ export function EmailCampaignsWidget() {
                             </div>
                           </div>
                         </div>
-                        <div className="bg-white p-3 rounded border">
+                        <div className="bg-card p-3 rounded border">
                           <h6 className="font-medium text-sm mb-2">Variante B</h6>
                           <p className="text-sm text-gray-600 mb-2">{campaign.abTest.variantB.subject}</p>
                           <div className="space-y-1 text-xs">

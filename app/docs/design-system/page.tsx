@@ -158,9 +158,10 @@ export default function DesignSystemPage() {
       <h4 className="font-semibold capitalize">{name}</h4>
       <div className="grid grid-cols-5 gap-2">
         {Object.entries(colors).map(([shade, hex]) => (
-          <div 
+          <button
             key={shade}
-            className="group cursor-pointer"
+            type="button"
+            className="group cursor-pointer w-full text-left bg-transparent border-none p-0 focus:outline-none"
             onClick={() => {
               setSelectedColor(hex)
               copyToClipboard(hex, `color-${name}-${shade}`)
@@ -174,7 +175,7 @@ export default function DesignSystemPage() {
               <div className="font-medium">{shade}</div>
               <div className="text-muted-foreground">{hex}</div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

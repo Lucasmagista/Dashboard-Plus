@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -24,7 +24,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -413,7 +412,7 @@ export default function CalendarPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {events.slice(0, 5).map((event) => (
-                <button key={event.id} className="flex items-start space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-gray-100 w-full text-left" onClick={() => setEventDetail(event)} tabIndex={0}>
+                <button key={event.id} className="flex items-start space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 w-full text-left bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800" onClick={() => setEventDetail(event)} tabIndex={0}>
                   <div className="flex-shrink-0">
                     {(event.type === "meeting" || event.type === "reuniao") && <Users className="h-5 w-5 text-blue-600" />}
                     {(event.type === "call" || event.type === "ligacao") && <Phone className="h-5 w-5 text-green-600" />}
@@ -444,10 +443,10 @@ export default function CalendarPage() {
         </div>
 
         {/* Modal de eventos do dia selecionado ou detalhes de evento */}
-        <Dialog open={!!eventDetail} onOpenChange={v => { if (!v) setEventDetail(null) }}>
-          <DialogContent className="max-w-xl w-full p-0 overflow-hidden">
-            {/* Se for lista de eventos do dia */}
-            {Array.isArray(eventDetail?.events) ? (
+        {(() => {
+          let dialogContent = null;
+          if (Array.isArray(eventDetail?.events)) {
+            dialogContent = (
               <div className="p-6">
                 <DialogHeader>
                   <DialogTitle className="text-xl font-bold mb-2 flex items-center gap-2">
@@ -459,7 +458,7 @@ export default function CalendarPage() {
                     <div className="text-muted-foreground text-sm">Nenhum evento para este dia.</div>
                   )}
                   {eventDetail.events.map((ev: any) => (
-                    <div key={ev.id} className="border rounded-lg p-4 bg-zinc-900/80 dark:bg-zinc-900/80 shadow-sm hover:bg-blue-50 dark:hover:bg-zinc-800 transition flex flex-col md:flex-row md:items-center gap-3">
+                    <div key={ev.id} className="border rounded-lg p-4 bg-zinc-100 dark:bg-zinc-900 shadow-sm hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex flex-col md:flex-row md:items-center gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <Badge className={getEventColor(ev)}>{ev.type}</Badge>
@@ -495,9 +494,11 @@ export default function CalendarPage() {
                   ))}
                 </div>
               </div>
-            ) : eventDetail ? (
+            );
+          } else if (eventDetail) {
+            dialogContent = (
               // Detalhe de um evento único
-              <div className="p-8 bg-gradient-to-br from-blue-50 via-white to-white min-w-[320px]">
+              <div className="p-8 bg-gradient-to-br from-blue-50 via-white to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 min-w-[320px]">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-bold flex items-center gap-2 mb-2">
                     {eventDetail.type === 'reuniao' || eventDetail.type === 'meeting' ? <Users className="h-6 w-6 text-blue-600" /> : null}
@@ -546,7 +547,7 @@ export default function CalendarPage() {
                   </div>
                   <div className="space-y-2">
                     {eventDetail.description && (
-                      <div className="bg-zinc-900 dark:bg-zinc-900 rounded-lg p-3 text-gray-100 text-sm shadow-inner">
+                      <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 text-gray-900 dark:text-gray-100 text-sm shadow-inner">
                         <b>Descrição:</b>
                         <div className="mt-1 whitespace-pre-line">{eventDetail.description}</div>
                       </div>
@@ -559,9 +560,16 @@ export default function CalendarPage() {
                   <Button size="sm" variant="outline" onClick={() => setEventDetail(null)}>Fechar</Button>
                 </div>
               </div>
-            ) : null}
-          </DialogContent>
-        </Dialog>
+            );
+          }
+          return (
+            <Dialog open={!!eventDetail} onOpenChange={v => { if (!v) setEventDetail(null) }}>
+              <DialogContent className="max-w-xl w-full p-0 overflow-hidden">
+                {dialogContent}
+              </DialogContent>
+            </Dialog>
+          );
+        })()}
 
         {/* Modal de edição de evento */}
         <Dialog open={!!editEvent} onOpenChange={v => { if (!v) setEditEvent(null) }}>
