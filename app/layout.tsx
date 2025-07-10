@@ -9,7 +9,6 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { CSSOptimizer } from "@/components/css-optimizer"
 import { Toaster } from "@/components/ui/toaster"
 import { ChunkErrorBoundary } from "@/components/chunk-error-boundary"
-import { cookies } from "next/headers"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -29,8 +28,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const cookieStore = await cookies()
-  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true"
+  // Evitar hidration error - deixar como false por padrão
+  const defaultOpen = false
 
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>

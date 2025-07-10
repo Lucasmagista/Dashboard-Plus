@@ -1,0 +1,44 @@
+{
+  "120363400823385068@g.us": {
+    "step": "awaiting_main_option",
+    "data": {
+      "name": "Próximos Passos Recomendados:\nImplementar Service Worker para cache inteligente\nLazy Loading para componentes pesados (gráficos)\nServer-Side Generation (SSG) para páginas estáticas\nDatabase Optimization com queries otimizadas\nCDN para assets estáticos",
+      "firstName": "Próximos"
+    },
+    "lastInteraction": 1751928624868
+  },
+  "5517992785352": {
+    "step": "faq_menu",
+    "data": {
+      "name": "Boa noite",
+      "firstName": "Boa"
+    },
+    "lastInteraction": 1751928667666
+  },
+  "5518998103415": {
+    "step": "awaiting_name",
+    "data": {},
+    "lastInteraction": 1751928625941
+  },
+  "5518991031487": {
+    "step": "awaiting_name",
+    "data": {},
+    "lastInteraction": 1751928624296
+  },
+  "5517992749835": {
+    "step": "awaiting_main_option",
+    "data": {
+      "name": "Bot reiniciado com sucesso!",
+      "firstName": "Bot"
+    },
+    "lastInteraction": 1751928626106
+  },
+  "5516981911001": {
+    "step": "awaiting_main_option",
+    "data": {
+      "name": "Não estamos disponíveis no momento. Fique a vontade pra nos mandar o que precisa.\nRetornaremos imediatamente apos retorno.\nMystère Lingerie agradece.\n\n📷https://www.instagram.com/mysterelingerierp/\n\n🌐\nhttps://mystere.com.br/",
+      "firstName": "Não"
+    },
+    "lastInteraction": 1751928632457
+  }
+}

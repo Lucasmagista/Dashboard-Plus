@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   BarChart3,
   Building2,
@@ -347,8 +347,14 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const isActive = (url: string) => {
+    if (!isHydrated) return false // Evitar inconsistências durante hidratação
     if (url === "/") {
       return pathname === "/"
     }
@@ -360,7 +366,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="sidebar-header">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild data-sidebar-menu-button>
+            <SidebarMenuButton size="lg" asChild>
               <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Building2 className="size-4" />
@@ -387,7 +393,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem key={item.title}>
                   {item.items ? (
                     <Collapsible
-                      defaultOpen={item.items.some((subItem) => isActive(subItem.url))}
+                      defaultOpen={false} // Sempre fechado inicialmente para evitar hydration errors
                       className="group/collapsible"
                     >
                       <div className="flex items-center">
@@ -396,8 +402,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           asChild 
                           tooltip={item.title} 
                           className="gap-2 text-sm px-3 py-2 flex-1"
-                          isActive={item.url ? isActive(item.url) : false}
-                          data-sidebar-menu-button
+                          isActive={isHydrated && item.url ? isActive(item.url) : false}
                         >
                           <Link href={item.url ?? "#"}>
                             <item.icon className="size-4" />
@@ -428,7 +433,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuSub data-sidebar-menu-sub>
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="gap-2 text-sm px-3 py-2" data-sidebar-menu-button>
+                              <SidebarMenuSubButton asChild isActive={isHydrated && isActive(subItem.url)} className="gap-2 text-sm px-3 py-2">
                                 <Link href={subItem.url}>
                                   <subItem.icon className="size-4" />
                                   <span>{subItem.title}</span>
@@ -445,7 +450,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2" data-sidebar-menu-button>
+                    <SidebarMenuButton asChild isActive={isHydrated && isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2">
                       <Link href={item.url}>
                         <item.icon className="size-4" />
                         <span>{item.title}</span>
@@ -468,7 +473,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               {data.navSecondary.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild size="sm" isActive={isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2" data-sidebar-menu-button>
+                  <SidebarMenuButton asChild size="sm" isActive={isHydrated && isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2">
                     <Link href={item.url}>
                       <item.icon className="size-4" />
                       <span>{item.title}</span>
@@ -494,7 +499,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  data-sidebar-menu-button
                 >
                   <div className="relative">
                     <Avatar className="h-8 w-8 rounded-lg">

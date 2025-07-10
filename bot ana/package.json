@@ -1,0 +1,38 @@
+{
+    "name": "whatsapp-bot-erros",
+    "version": "1.0.0",
+    "description": "Bot de WhatsApp para leitura de erros e geração de relatórios automáticos.",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node src/index.js",
+        "recuperar-rejeitadas": "node scripts/recuperar-rejeitadas.js"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "archiver": "^7.0.0",
+        "better-sqlite3": "^12.2.0",
+        "chartjs-node-canvas": "^5.0.0",
+        "date-fns": "^4.1.0",
+        "dotenv": "^17.0.0",
+        "emailjs": "^4.0.3",
+        "exceljs": "^4.4.0",
+        "express": "^4.19.2",
+        "googleapis": "^150.0.1",
+        "node-cron": "^4.2.0",
+        "node-fetch": "^3.3.2",
+        "nodemailer": "^6.9.13",
+        "pdfkit": "^0.17.1",
+        "puppeteer": "^24.11.2",
+        "qrcode-terminal": "^0.12.0",
+        "sharp": "^0.34.2",
+        "socket.io": "^4.8.1",
+        "whatsapp-web.js": "^1.31.0",
+        "winston": "^3.10.0"
+    },
+    "devDependencies": {
+        "eslint": "^9.30.0",
+        "jest": "^29.7.0",
+        "prettier": "^3.6.2"
+    }
+}
