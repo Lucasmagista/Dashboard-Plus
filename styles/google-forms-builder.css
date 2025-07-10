@@ -1,0 +1,151 @@
+/* Google Forms Builder Styles */
+.google-forms-builder {
+  --primary-color: #673ab7;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #e0e0e0;
+}
+
+.forms-builder-container {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-family, 'Roboto', sans-serif);
+}
+
+.forms-builder-header {
+  background: linear-gradient(135deg, var(--primary-color), rgba(103, 58, 183, 0.8));
+  color: white;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.forms-builder-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.forms-builder-question {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.forms-builder-question:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.forms-builder-question.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.2);
+}
+
+.forms-builder-question-border {
+  border-left: 4px solid var(--primary-color);
+}
+
+.forms-builder-button-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.forms-builder-button-primary:hover {
+  background-color: rgba(103, 58, 183, 0.9);
+  border-color: rgba(103, 58, 183, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(103, 58, 183, 0.3);
+}
+
+.forms-builder-button-primary:disabled {
+  background-color: #ccc;
+  border-color: #ccc;
+  transform: none;
+  box-shadow: none;
+}
+
+.forms-builder-theme-preview {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.125rem;
+  margin-bottom: 0.25rem;
+  background-color: var(--primary-color);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.forms-builder-input-focus:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.2);
+}
+
+.forms-builder-sidebar {
+  background: #fafafa;
+  border-right: 1px solid var(--border-color);
+}
+
+.forms-builder-drag-handle {
+  cursor: grab;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.forms-builder-drag-handle:hover {
+  opacity: 1;
+}
+
+.forms-builder-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .forms-builder-container {
+    padding: 0.5rem;
+  }
+  
+  .forms-builder-question {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Animation for new questions */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.forms-builder-question-new {
+  animation: slideInUp 0.3s ease-out;
+}
+
+/* Custom scrollbar */
+.forms-builder-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.forms-builder-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.forms-builder-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.forms-builder-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(103, 58, 183, 0.8);
+}

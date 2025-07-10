@@ -9,7 +9,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Briefcase, Calendar, FileText, Gift, Users, Upload, Download, Plus } from "lucide-react"
+import { Briefcase, Calendar, FileText, Gift, Users, Upload, Download, Plus, ClipboardList, BarChart3, Eye, ExternalLink } from "lucide-react"
+import { useGoogleForms } from "@/hooks/use-google-forms"
+import { GoogleFormsBuilder } from "@/components/forms/google-forms-builder"
+import { FormAnalytics } from "@/components/forms/form-analytics-advanced"
 
 const initialEmployees = [
   { id: 1, name: "João Silva", email: "joao@empresa.com", role: "Desenvolvedor", department: "TI", status: "Ativo", admission: "2022-03-10", birthday: "1990-07-15", avatar: "/placeholder-user.jpg" },
@@ -33,6 +36,24 @@ const initialResumes = [
   { id: 2, name: "Fernanda Lima", email: "fernanda.lima@gmail.com", position: "Designer", status: "Em análise", file: "fernanda-lima.pdf", date: "2025-06-28" },
 ]
 export default function RHPage() {
+  // Hook para gerenciar formulários Google Forms
+  const { 
+    forms, 
+    loading: formsLoading, 
+    error: formsError, 
+    createForm, 
+    updateFormStatus, 
+    deleteForm, 
+    getFormResponses,
+    clearError 
+  } = useGoogleForms()
+
+  // Estados para formulários
+  const [showFormBuilder, setShowFormBuilder] = useState(false)
+  const [selectedFormForAnalytics, setSelectedFormForAnalytics] = useState<any>(null)
+  const [formResponses, setFormResponses] = useState<any[]>([])
+  const [loadingResponses, setLoadingResponses] = useState(false)
+
   // Estados auxiliares para tela de currículos aprimorada
   const [filterStatus, setFilterStatus] = useState("");
   const [filterPosition, setFilterPosition] = useState("");
@@ -75,6 +96,28 @@ export default function RHPage() {
   }
   function handleCommentChange(resumeId: number, value: string) {
     setResumeComments(c => ({ ...c, [resumeId]: value }));
+  }
+
+  // Handlers para formulários
+  const handleCreateForm = async (formData: any) => {
+    try {
+      await createForm(formData)
+    } catch (error) {
+      console.error('Erro ao criar formulário:', error)
+    }
+  }
+
+  const handleViewAnalytics = async (form: any) => {
+    try {
+      setLoadingResponses(true)
+      const responses = await getFormResponses(form.id)
+      setFormResponses(responses)
+      setSelectedFormForAnalytics(form)
+    } catch (error) {
+      console.error('Erro ao carregar análises:', error)
+    } finally {
+      setLoadingResponses(false)
+    }
   }
 
   const [tab, setTab] = useState("colaboradores");
@@ -240,7 +283,7 @@ export default function RHPage() {
             <TabsTrigger value="ferias"><Gift className="mr-2 h-4 w-4" />Férias</TabsTrigger>
             <TabsTrigger value="aniversariantes"><Calendar className="mr-2 h-4 w-4" />Aniversariantes</TabsTrigger>
             <TabsTrigger value="curriculos"><FileText className="mr-2 h-4 w-4" />Currículos</TabsTrigger>
-            <TabsTrigger value="documentos"><Briefcase className="mr-2 h-4 w-4" />Documentos</TabsTrigger>
+            <TabsTrigger value="formularios"><ClipboardList className="mr-2 h-4 w-4" />Formulários</TabsTrigger>
           </TabsList>
           <TabsContent value="colaboradores">
             <Card className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl transition-colors">
@@ -666,45 +709,135 @@ export default function RHPage() {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="documentos">
-            <Card className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl transition-colors">
-              <CardHeader className="bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 rounded-t-xl">
-                <CardTitle className="text-zinc-900 dark:text-zinc-100">Documentos</CardTitle>
-                <CardDescription className="text-zinc-600 dark:text-zinc-400">Documentos importantes dos colaboradores</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center mb-4 gap-2">
-                  <Button variant="outline" size="sm" onClick={() => alert('Funcionalidade de upload de documento em breve!')}><Upload className="h-4 w-4 mr-1" />Enviar Documento</Button>
+          <TabsContent value="formularios">
+            {selectedFormForAnalytics ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setSelectedFormForAnalytics(null)}
+                  >
+                    ← Voltar
+                  </Button>
                 </div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Colaborador</TableHead>
-                      <TableHead>Documento</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>João Silva</TableCell>
-                      <TableCell>Contrato.pdf</TableCell>
-                      <TableCell>Contrato</TableCell>
-                      <TableCell>2022-03-10</TableCell>
-                      <TableCell><Button variant="outline" size="sm"><Download className="h-4 w-4 mr-1" />Baixar</Button></TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Maria Souza</TableCell>
-                      <TableCell>Exame Admissional.pdf</TableCell>
-                      <TableCell>Exame</TableCell>
-                      <TableCell>2021-11-01</TableCell>
-                      <TableCell><Button variant="outline" size="sm"><Download className="h-4 w-4 mr-1" />Baixar</Button></TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                <FormAnalytics 
+                  form={selectedFormForAnalytics} 
+                  responses={formResponses}
+                  loading={loadingResponses}
+                />
+              </div>
+            ) : (
+              <Card className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl transition-colors">
+                <CardHeader className="bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 rounded-t-xl">
+                  <CardTitle className="text-zinc-900 dark:text-zinc-100">Formulários Google Forms</CardTitle>
+                  <CardDescription className="text-zinc-600 dark:text-zinc-400">Crie e gerencie formulários para pesquisas e avaliações</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {forms.length} formulário{forms.length !== 1 ? 's' : ''} encontrado{forms.length !== 1 ? 's' : ''}
+                      </span>
+                      {formsError && (
+                        <span className="text-sm text-red-600 dark:text-red-400">
+                          {formsError}
+                        </span>
+                      )}
+                    </div>
+                    <Button onClick={() => setShowFormBuilder(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Criar Formulário
+                    </Button>
+                  </div>
+
+                  {formsLoading ? (
+                    <div className="space-y-4">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="h-24 bg-zinc-200 dark:bg-zinc-700 rounded-lg"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : forms.length === 0 ? (
+                    <div className="text-center py-12">
+                      <ClipboardList className="h-12 w-12 text-zinc-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+                        Nenhum formulário criado
+                      </h3>
+                      <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+                        Comece criando seu primeiro formulário para coletar feedback e dados dos colaboradores.
+                      </p>
+                      <Button onClick={() => setShowFormBuilder(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Criar Primeiro Formulário
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {forms.map(form => (
+                        <div key={form.id} className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+                                  {form.title}
+                                </h3>
+                                <Badge 
+                                  variant={form.status === 'active' ? 'default' : 'secondary'}
+                                  className="text-xs"
+                                >
+                                  {form.status === 'active' ? 'Ativo' : 
+                                   form.status === 'draft' ? 'Rascunho' : 'Inativo'}
+                                </Badge>
+                              </div>
+                              {form.description && (
+                                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+                                  {form.description}
+                                </p>
+                              )}
+                              <div className="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+                                <span>
+                                  <Users className="h-4 w-4 inline mr-1" />
+                                  {form.responseCount} respostas
+                                </span>
+                                <span>Criado em {form.createdAt}</span>
+                                <span>Atualizado em {form.updatedAt}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleViewAnalytics(form)}
+                              >
+                                <BarChart3 className="h-4 w-4 mr-1" />
+                                Análises
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => window.open(form.url, '_blank')}
+                              >
+                                <ExternalLink className="h-4 w-4 mr-1" />
+                                Abrir
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => updateFormStatus(form.id, form.status === 'active' ? 'inactive' : 'active')}
+                              >
+                                {form.status === 'active' ? 'Desativar' : 'Ativar'}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
 
@@ -751,10 +884,18 @@ export default function RHPage() {
             />
           </DialogContent>
         </Dialog>
-      </div>
 
-    </SidebarInset>
-  );
+        {/* Modal Form Builder */}
+        <GoogleFormsBuilder 
+          open={showFormBuilder}
+          onOpenChange={setShowFormBuilder}
+          onSubmit={handleCreateForm}
+          loading={formsLoading}
+        />
+
+      </div>
+      </SidebarInset>
+    )
 }
 
 // Tipos auxiliares para tipagem dos formulários
@@ -889,16 +1030,6 @@ function EmployeeForm({ initial, onSave, onCancel }: EmployeeFormProps) {
           <option value="Férias">Férias</option>
           <option value="Desligado">Desligado</option>
         </select>
-      </div>
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <Input placeholder="Data de Admissão" type="date" value={form.admission} onChange={e => setForm(f => ({ ...f, admission: e.target.value }))} required />
-          {errors.admission && <span className="text-xs text-red-500">{errors.admission}</span>}
-        </div>
-        <div className="flex-1">
-          <Input placeholder="Data de Nascimento" type="date" value={form.birthday} onChange={e => setForm(f => ({ ...f, birthday: e.target.value }))} required />
-          {errors.birthday && <span className="text-xs text-red-500">{errors.birthday}</span>}
-        </div>
       </div>
       <div className="flex gap-2 justify-end mt-2">
         <Button variant="outline" type="button" onClick={onCancel}>Cancelar</Button>

@@ -3,39 +3,39 @@
 import React, { useEffect, useState } from "react"
 import {
   BarChart3,
+  Bell,
+  BookOpen,
+  Bot,
   Building2,
   Calendar,
   ChevronRight,
   ChevronUp,
+  Code,
   CreditCard,
+  Crown,
+  Database,
+  FileText,
+  GitCommit,
+  Globe,
+  HelpCircle,
   Home,
+  ImageIcon,
+  Layers,
+  LogOut,
   Mail,
+  MessageCircle,
   MessageSquare,
+  Monitor,
+  Moon,
+  Phone,
   Settings,
+  Shield,
+  Sun,
+  Target,
+  TrendingUp,
+  User2,
   Users,
   Zap,
-  User2,
-  Phone,
-  TrendingUp,
-  Shield,
-  Bell,
-  Bot,
-  HelpCircle,
-  LogOut,
-  Moon,
-  Sun,
-  Monitor,
-  Crown,
-  Target,
-  MessageCircle,
-  ImageIcon,
-  BookOpen,
-  FileText,
-  Code,
-  Layers,
-  Database,
-  Globe,
-  GitCommit,
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
@@ -87,37 +87,31 @@ const data = {
       title: "Painel",
       url: "/",
       icon: Home,
-      badge: null,
     },
     {
       title: "CRM",
       url: "/crm",
       icon: Building2,
-      badge: "",
       items: [
         {
           title: "Contatos",
           url: "/crm/contacts",
           icon: Users,
-          badge: "",
         },
         {
           title: "Leads",
           url: "/crm/leads",
           icon: Target,
-          badge: "",
         },
         {
           title: "Funil",
           url: "/crm/pipeline",
           icon: TrendingUp,
-          badge: "",
         },
         {
           title: "Agenda",
           url: "/crm/calendar",
           icon: Calendar,
-          badge: "",
         },
       ],
     },
@@ -125,25 +119,21 @@ const data = {
       title: "Comunicações",
       url: "/communications",
       icon: MessageSquare,
-      badge: "",
       items: [
         {
           title: "Mensagens",
           url: "/communications/messages",
           icon: MessageCircle,
-          badge: "",
         },
         {
           title: "E-mail",
           url: "/communications/email",
           icon: Mail,
-          badge: "",
         },
         {
           title: "Telefone",
           url: "/communications/phone",
           icon: Phone,
-          badge: "",
         },
       ],
     },
@@ -151,25 +141,21 @@ const data = {
       title: "Automação",
       url: "/automation",
       icon: Bot,
-      badge: "",
       items: [
         {
           title: "Bots",
           url: "/bots",
           icon: Bot,
-          badge: "",
         },
         {
           title: "Workflows",
           url: "/workflows",
           icon: Zap,
-          badge: "",
         },
         {
           title: "Modelos",
           url: "/templates",
           icon: ImageIcon,
-          badge: "",
         },
       ],
     },
@@ -177,55 +163,46 @@ const data = {
       title: "Análises",
       url: "/analytics",
       icon: BarChart3,
-      badge: null,
     },
     {
       title: "Integrações",
       url: "/integrations",
       icon: Zap,
-      badge: "",
       items: [
         {
           title: "Marketing",
           url: "/integrations/marketing",
           icon: Mail,
-          badge: "",
         },
         {
           title: "Pagamentos",
           url: "/integrations/payments",
           icon: CreditCard,
-          badge: "",
         },
         {
           title: "Business Intelligence",
           url: "/integrations/bi",
           icon: BarChart3,
-          badge: "",
         },
         {
           title: "E-commerce",
           url: "/integrations/ecommerce",
           icon: Globe,
-          badge: "",
         },
         {
           title: "Comunicação",
           url: "/integrations/communication",
           icon: MessageSquare,
-          badge: "",
         },
         {
           title: "Automação",
           url: "/integrations/automation",
           icon: Bot,
-          badge: "",
         },
         {
           title: "Todas as Integrações",
           url: "/integrations",
           icon: Layers,
-          badge: "",
         },
       ],
     },
@@ -233,73 +210,61 @@ const data = {
       title: "Documentação",
       url: "/docs",
       icon: BookOpen,
-      badge: "",
       items: [
         {
           title: "Início Rápido",
           url: "/docs/quick-start",
           icon: Zap,
-          badge: null,
         },
         {
           title: "Instalação",
           url: "/docs/installation",
           icon: Code,
-          badge: null,
         },
         {
           title: "API Reference",
           url: "/docs/api",
           icon: Database,
-          badge: null,
         },
         {
           title: "Integrações",
           url: "/docs/integrations",
           icon: Globe,
-          badge: null,
         },
         {
           title: "Design System",
           url: "/docs/design-system",
           icon: Layers,
-          badge: null,
         },
         {
           title: "Guias",
           url: "/docs/guides",
           icon: FileText,
-          badge: null,
         },
         {
           title: "Melhores Práticas",
           url: "/docs/best-practices",
           icon: Target,
-          badge: null,
         },
         {
           title: "FAQ",
           url: "/docs/faq",
           icon: HelpCircle,
-          badge: null,
         },
         {
           title: "Changelog",
           url: "/docs/changelog",
           icon: GitCommit,
-          badge: null,
         },
         {
           title: "Contribuição",
           url: "/docs/contributing",
           icon: Users,
-          badge: null,
         },
         {
           title: "Roadmap",
           url: "/docs/roadmap",
           icon: TrendingUp,
-          badge: "",
         },
       ],
     },
@@ -309,37 +274,31 @@ const data = {
       title: "RH",
       url: "/rh",
       icon: User2,
-      badge: null,
     },
     {
       title: "Configurações",
       url: "/settings",
       icon: Settings,
-      badge: null,
     },
     {
       title: "Cobrança",
       url: "/billing",
       icon: CreditCard,
-      badge: null,
     },
     {
       title: "Segurança",
       url: "/security",
       icon: Shield,
-      badge: "",
     },
     {
       title: "Notificações",
       url: "/notifications",
       icon: Bell,
-      badge: "",
     },
     {
       title: "Ajuda & Suporte",
       url: "/support",
       icon: HelpCircle,
-      badge: null,
     },
   ],
 }
@@ -353,12 +312,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setIsHydrated(true)
   }, [])
 
+  // Função para verificar se um item está ativo - sempre retorna false durante hidratação
   const isActive = (url: string) => {
-    if (!isHydrated) return false // Evitar inconsistências durante hidratação
+    if (!isHydrated) return false
     if (url === "/") {
       return pathname === "/"
     }
     return pathname.startsWith(url)
+  }
+
+  // Renderizar badge apenas se existir e não for string vazia
+  const renderBadge = (badge?: any) => {
+    if (!badge || badge === "") return null
+    return (
+      <Badge
+        variant={badge === "New" ? "default" : "secondary"}
+        className="ml-auto text-xs px-2 py-0.5 badge"
+      >
+        {badge}
+      </Badge>
+    )
   }
 
   return (
@@ -402,19 +375,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           asChild 
                           tooltip={item.title} 
                           className="gap-2 text-sm px-3 py-2 flex-1"
-                          isActive={isHydrated && item.url ? isActive(item.url) : false}
+                          isActive={isActive(item.url ?? "#")}
                         >
                           <Link href={item.url ?? "#"}>
                             <item.icon className="size-4" />
                             <span>{item.title}</span>
-                            {"badge" in item && (item as any).badge && (
-                              <Badge
-                                variant={(item as any).badge === "New" ? "default" : "secondary"}
-                                className="ml-auto text-xs px-2 py-0.5 badge"
-                              >
-                                {(item as any).badge}
-                              </Badge>
-                            )}
+                            {renderBadge((item as any).badge)}
                           </Link>
                         </SidebarMenuButton>
                         
@@ -433,15 +399,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuSub data-sidebar-menu-sub>
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton asChild isActive={isHydrated && isActive(subItem.url)} className="gap-2 text-sm px-3 py-2">
+                              <SidebarMenuSubButton asChild isActive={isActive(subItem.url)} className="gap-2 text-sm px-3 py-2">
                                 <Link href={subItem.url}>
                                   <subItem.icon className="size-4" />
                                   <span>{subItem.title}</span>
-                                  {"badge" in subItem && (subItem as any).badge && (
-                                    <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.5 badge">
-                                      {(subItem as any).badge}
-                                    </Badge>
-                                  )}
+                                  {renderBadge((subItem as any).badge)}
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -450,15 +412,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    <SidebarMenuButton asChild isActive={isHydrated && isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2">
+                    <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2">
                       <Link href={item.url}>
                         <item.icon className="size-4" />
                         <span>{item.title}</span>
-                        {"badge" in item && (item as any).badge && (
-                          <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.5 badge">
-                            {(item as any).badge}
-                          </Badge>
-                        )}
+                        {renderBadge((item as any).badge)}
                       </Link>
                     </SidebarMenuButton>
                   )}
@@ -473,15 +431,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               {data.navSecondary.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild size="sm" isActive={isHydrated && isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2">
+                  <SidebarMenuButton asChild size="sm" isActive={isActive(item.url)} tooltip={item.title} className="gap-2 text-sm px-3 py-2">
                     <Link href={item.url}>
                       <item.icon className="size-4" />
                       <span>{item.title}</span>
-                      {"badge" in item && (item as any).badge && (
-                        <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.5 badge">
-                          {(item as any).badge}
-                        </Badge>
-                      )}
+                      {renderBadge((item as any).badge)}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -544,7 +498,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}> 
-                  {theme === "dark" ? (
+                  {isHydrated && theme === "dark" ? (
                     <>
                       <Sun />
                       Modo Claro
